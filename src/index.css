@@ -1,0 +1,45 @@
+@import url('https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,800;1,300;1,400;1,500;1,800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+@layer base {
+  html {
+    font-family: "Ubuntu Sans", sans-serif;
+    /* overflow-x: hidden; */
+  }
+}
+
+/* Hide the clear (cross) button in WebKit browsers (Chrome, Safari) */
+input[type="search"]::-webkit-search-cancel-button {
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+/* Hide the clear (cross) button in Internet Explorer and Edge */
+input[type="search"]::-ms-clear {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
+a.active {
+  @apply text-blue-800 border-b-2 border-blue-800 py-1
+}
+
+.blr {
+  background-color: rgba(235, 238, 240, 0.5) !important;
+  backdrop-filter: blur(5px) !important;
+}
