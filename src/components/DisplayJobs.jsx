@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react'
 import CardBox from './CardBox';
 import loader from '../assets/lg.gif';
 import axios from 'axios';
-import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
+import Pagination from '@mui/material/Pagination';
+import Stack from '@mui/material/Stack';
 
 const HomeBody = () => {
     const [isloading, setLoading] = useState(true);
@@ -11,13 +12,10 @@ const HomeBody = () => {
     const [currentPage, setCurrentPage] = useState(1);
 
     const totalPages = Math.ceil(filteredJobs.length / 6);
-    const minCount = 0;
-    const maxCount = totalPages;
 
-    const handleClick = (page) => {
-        if (page <= maxCount && page > minCount) {
-            setCurrentPage(page);
-        }
+    const handleChange = (event, value) => {
+        setCurrentPage(value);
+        window.scrollTo({ top: 0 });
     };
 
 
@@ -39,6 +37,8 @@ const HomeBody = () => {
     const indexOfFirstJob = indexOfLastJob - 6;
     const currentJobs = filteredJobs.slice(indexOfFirstJob, indexOfLastJob);
 
+    console.log(currentJobs);
+
     return (
         <main className='h-5/6'>
             {isloading ?
@@ -52,20 +52,9 @@ const HomeBody = () => {
             }
             {
                 totalPages > 1 &&
-                <section className='h-24 flex justify-center items-center gap-4 text-sm font-semibold max-md:text-sm'>
-                    <button className={currentPage == 1 ? `bg-gray-500 text-white border border-gray-500 border-solid rounded-full h-7 w-7 flex justify-center items-center` : `bg-blue-700 transition-all duration-200 text-white border border-blue-700 border-solid rounded-full h-7 w-7 flex justify-center items-center hover:bg-blue-800 hover:border-blue-800`} onClick={() => { handleClick(currentPage - 1) }}><FaArrowLeft /></button>
-                    {Array.from({ length: totalPages }, (_, index) => (
-                        <button
-                            key={index}
-                            onClick={() => handleClick(index + 1)}
-                            className={`h-7 w-7 border border-solid transition-all duration-200 border-blue-950 rounded-full flex justify-center items-center hover:bg-blue-950 hover:text-white max-sm:hidden ${index + 1 === currentPage ? 'bg-blue-950 text-white' : 'bg-white text-blue-950'
-                                }`}
-                        >
-                            {index + 1}
-                        </button>
-                    ))}
-                    <button className={currentPage == maxCount ? `bg-gray-500 text-white border border-gray-500 border-solid rounded-full h-7 w-7 flex justify-center items-center` : `bg-blue-700 transition-all duration-200 text-white border border-blue-700 border-solid rounded-full h-7 w-7 flex justify-center items-center hover:bg-blue-800 hover:border-blue-800`} onClick={() => handleClick(currentPage + 1)}><FaArrowRight /></button>
-                </section>
+                <Stack spacing={2} className='h-24 flex justify-center items-center'>
+                    <Pagination count={totalPages} page={currentPage} onChange={handleChange} variant="outlined" color="primary" />
+                </Stack>
             }
         </main >
     )

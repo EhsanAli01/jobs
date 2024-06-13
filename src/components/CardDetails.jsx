@@ -7,6 +7,7 @@ import { formatTime, formatDate } from '../../script';
 import { IoMdArrowRoundBack } from "react-icons/io";
 import loader from '../assets/lg.gif';
 import axios from 'axios';
+import { twMerge } from 'tailwind-merge';
 
 const CardDetails = () => {
     const navigate = useNavigate();
@@ -15,10 +16,14 @@ const CardDetails = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const baseUrl = 'http://localhost:3000/';
+    const userType = localStorage.getItem('userType');
+    const userId = localStorage.getItem('id');
+    const email = localStorage.getItem('email');
+
 
     useEffect(() => {
         const token = localStorage.getItem('token');
-        axios.get(`${baseUrl}jobs/${localStorage.getItem('userType')}/${id}`, { headers: { "Authorization": `Bearer ${token}` } })
+        axios.get(`${baseUrl}jobs/${userType}/${id}`, { headers: { "Authorization": `Bearer ${token}` } })
             .then(result => {
                 setCardData(result.data.message);
                 setLoading(false);
@@ -38,12 +43,18 @@ const CardDetails = () => {
         return null;
     }
 
-    const { jobTitle, category, description, location, date, startTime, endTime } = cardData;
+    const { jobTitle, category, description, location, date, startTime, endTime, jobRequest, user } = cardData;
     const images = cardData.images || [];
     const formattedDate = formatDate(date);
     const formattedStartTime = formatTime(startTime);
     const formattedEndTime = formatTime(endTime);
 
+
+    // Tailwind Merge
+    const button = twMerge('w-32 py-1 rounded-lg text-white relative font-semibold transition-all duration-200 flex justify-center items-center h-10')
+    const buttonPrimary = twMerge(button, 'border border-blue-900 bg-blue-900 hover:bg-blue-950 hover:border-blue-950')
+
+    console.log(jobRequest);
 
     return (
         <>{
@@ -53,10 +64,28 @@ const CardDetails = () => {
                 </div>
                 :
                 <>
-                    <div className='text-4xl text-gray-800 flex px-10 py-4'>
-                        <div className='border border-gray-400 rounded-full transition-all duration-150 cursor-pointer p-1 bg-slate-100 hover:shadow-xl hover:bg-slate-200' onClick={() => navigate('/')}>
+                    <div className='text-gray-800 flex justify-between items-center px-10 py-4'>
+                        <div className='border border-gray-400 text-4xl rounded-full transition-all duration-150 cursor-pointer p-1 bg-slate-100 hover:shadow-xl hover:bg-slate-200' onClick={() => navigate('/')}>
                             <IoMdArrowRoundBack />
                         </div>
+
+
+                        {userType === 'contractor' &&
+                            <>
+                                {jobRequest.length > 0 && jobRequest.some(obj => obj.userId === userId) ?
+                                    <span className={`${button} bg-gray-500 cursor-default`}>Applied</span>
+                                    :
+                                    <button className={buttonPrimary} onClick={() => navigate(`/contractor/ApplyJob/${id}`)}>Apply</button>}
+                            </>
+                        }
+
+
+                        {userType === 'user' && email === user.email && jobRequest.length > 0 && <button className={buttonPrimary} onClick={() => navigate(`/user/requests/${id}`)}>Requests
+                            <span className='border-2 border-red-600 bg-red-600 rounded-full w-6 h-6 text-sm absolute -top-1 -right-2'>{jobRequest.length}
+                            </span>
+                        </button>}
+
+
                     </div>
                     <div className='cursor-pointer w-full h-96 rounded-lg flex p-10'>
                         <div className='flex flex-col w-1/2 gap-4'>
@@ -70,6 +99,11 @@ const CardDetails = () => {
                                 </div>
                             </div>
                             <div>
+                                <h2 className='text-xl font-bold my-1'>Posted By</h2>
+                                <p className='text-md text-gray-600'>{user.userName}</p>
+                                <p className='text-md text-gray-600'>{user.email}</p>
+                            </div>
+                            <div>
                                 <h2 className='text-xl font-bold mb-1'>Job Title</h2>
                                 <p className='text-md text-gray-600'>{jobTitle}</p>
                             </div>
@@ -77,14 +111,7 @@ const CardDetails = () => {
                                 <h2 className='text-xl font-bold my-1'>Details</h2>
                                 <p className='text-md text-gray-600'>{description}</p>
                             </div>
-                            <div className='flex items-center gap-8'>
-                                {images[1] && <div className='w-36 h-28 rounded-md overflow-hidden border border-gray-200 shadow-xl'>
-                                    <img src={`http://localhost:3000/${images[1]}`} alt="" className='w-full h-full object-cover' />
-                                </div>}
-                                {images[2] && <div className='w-36 h-28 rounded-md overflow-hidden border border-gray-200 shadow-xl'>
-                                    <img src={`http://localhost:3000/${images[2]}`} alt="" className='w-full h-full object-cover' />
-                                </div>}
-                            </div>
+
                         </div>
 
                         <div className='w-1/2 border-l-2 border-gray-400 px-5 flex flex-col gap-3'>
@@ -118,6 +145,14 @@ const CardDetails = () => {
 
                             </div>
 
+                            <div className='flex items-center gap-8'>
+                                {images[1] && <div className='w-36 h-28 rounded-md overflow-hidden border border-gray-200 shadow-xl'>
+                                    <img src={`http://localhost:3000/${images[1]}`} alt="" className='w-full h-full object-cover' />
+                                </div>}
+                                {images[2] && <div className='w-36 h-28 rounded-md overflow-hidden border border-gray-200 shadow-xl'>
+                                    <img src={`http://localhost:3000/${images[2]}`} alt="" className='w-full h-full object-cover' />
+                                </div>}
+                            </div>
 
                         </div>
                     </div>

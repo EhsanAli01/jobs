@@ -13,7 +13,7 @@ const Login = () => {
     const baseUrl = 'http://localhost:3000/';
 
     const userSchema = z.object({
-        email: z.string().email().min(1, "Email is required"),
+        email: z.string().min(1, "Email is required").email(),
         password: z.string().min(1, "Password is required")
 
     });
@@ -26,17 +26,24 @@ const Login = () => {
         validate: (values) => {
             try {
                 userSchema.parse(values);
+                return {}
             } catch (error) {
                 if (error instanceof z.ZodError) {
-                    return error.formErrors.fieldErrors;
+                    const fieldErrors = {};
+                    error.errors.forEach(err => {
+                        if (!fieldErrors[err.path[0]]) {
+                            fieldErrors[err.path[0]] = err.message;
+                        }
+                    });
+                    return fieldErrors;
                 }
+                return {}
             }
         },
         onSubmit: (values) => {
             setloading(true);
             axios.post(`${baseUrl}auth/login`, values)
                 .then(result => {
-                    console.log(result);
                     const { id, userType, userName, email, description, image } = result.data.message.result;
                     setloading(false);
                     const token = result.data.message.token;
@@ -61,6 +68,9 @@ const Login = () => {
         const token = localStorage.getItem('token');
         if (token) {
             navigate('/');
+        }
+        else {
+            localStorage.clear();
         }
     }, [])
 

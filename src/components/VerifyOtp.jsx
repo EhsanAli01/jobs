@@ -5,11 +5,9 @@ import axios from 'axios';
 import { z } from 'zod';
 import loader from '../assets/loader.gif';
 import { twMerge } from 'tailwind-merge'
-import ProgressContext from './ContextProvider';
 
 const VerifyOtp = () => {
     // States and variables
-    const { currentState, setCurrentState } = useContext(ProgressContext);
     const [timeLeft, setTimeLeft] = useState(30);
     const [obtained, setObtained] = useState(false);
     const intervalRef = useRef(null);
@@ -20,7 +18,7 @@ const VerifyOtp = () => {
 
     // Functions
     const userSchema = z.object({
-        otp: z.number({message: "OTP is required"}).min(4, "Invalid OTP")
+        otp: z.number({ message: "OTP is required" }).min(4, "Invalid OTP")
     });
 
     const formik = useFormik({
@@ -31,9 +29,13 @@ const VerifyOtp = () => {
             try {
                 userSchema.parse(values);
             } catch (error) {
-                if (error instanceof z.ZodError) {
-                    return error.formErrors.fieldErrors;
-                }
+                const fieldErrors = {};
+                error.errors.forEach(err => {
+                    if (!fieldErrors[err.path[0]]) {
+                        fieldErrors[err.path[0]] = err.message;
+                    }
+                });
+                return fieldErrors;
             }
         },
         onSubmit: (values) => {
@@ -43,7 +45,7 @@ const VerifyOtp = () => {
                     console.log(result);
                     setloading(false);
                     navigate('/forgot-password/update-password');
-                    localStorage.setItem('verified', true);
+                    localStorage.setItem('verified', 'true');
                 })
                 .catch(error => {
                     console.log(error);
@@ -83,61 +85,45 @@ const VerifyOtp = () => {
     }, [obtained]);
 
     useEffect(() => {
-        setCurrentState(2);
-        localStorage.setItem('verified', false);
-    }, [])
-
-    useEffect(() => {
+        otpHandler();
         const available = localStorage.getItem('available');
-        if (!available) {
+        localStorage.setItem('verified', 'false');
+        if (available === 'false') {
             navigate('/forgot-password/find-email');
         }
     }, [])
 
     // Tailwind Merge
     const button = twMerge('w-32 py-1 rounded-lg text-white font-semibold transition-all duration-200 flex justify-center items-center h-10')
-
     const buttonPrimary = twMerge(button, 'border border-blue-900 bg-blue-900 hover:bg-blue-950 hover:border-blue-950')
 
-    const buttonSuccess = twMerge(button, 'border border-green-900 bg-green-900 hover:bg-green-950 hover:border-green-950')
-
-    const disabledButton = twMerge('border border-gray-600 w-32 py-1 rounded-lg text-white bg-gray-600 font-semibold flex justify-center items-center h-10 cursor-default')
-
     return (
-        <form onSubmit={formik.handleSubmit} className='w-full h-full flex flex-col justify-center items-center'>
-            <div className='w-full flex flex-col h-[80%] justify-center gap-2'>
-                <label htmlFor="otp" className='text-xl w-full font-semibold'>One Time Password</label>
-                <div className='flex gap-1'>
-                    <input
-                        id='otp'
-                        type="number"
-                        placeholder='Enter OTP'
-                        value={formik.values.otp}
-                        className='border border-gray-500 px-3 w-[60%] py-1 rounded-md bg-gray-100 outline-none'
-                        onChange={formik.handleChange}
-                        onBlur={formik.handleBlur}
-                    />
-                    {obtained ?
-                        <span className='flex justify-center items-center font-semibold text-white p-1 rounded-md w-[40%] bg-gray-500 border border-gray-700'>{timeLeft}</span>
-                        :
-                        <button type='button' className='font-semibold text-white p-1 rounded-md w-[40%] border border-blue-900  bg-blue-900 hover:bg-blue-950 hover:border-blue-950' onClick={otpHandler}>Obtain</button>
-                    }
-                </div>
-                <p className='w-full text-gray-600'>Don't have an Account? <Link to="/signup" className='font-bold text-gray-900' onClick={() => localStorage.clear()}>Create One</Link></p>
-                {formik.touched.otp && formik.errors.otp && <div className="my-1 w-full text-red-600">{formik.errors.otp}</div>}
+        <form onSubmit={formik.handleSubmit} className='gap-[10px] w-full h-full flex flex-col py-5 justify-center items-center'>
+            <label htmlFor="otp" className='text-xl w-full font-semibold'>One Time Password</label>
+            <div className='flex gap-1 w-full'>
+                <input
+                    id='otp'
+                    type="number"
+                    placeholder='Enter OTP'
+                    value={formik.values.otp}
+                    className='border border-gray-500 px-3 w-[60%] py-1 rounded-md bg-gray-100 outline-none'
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                />
+                {obtained ?
+                    <span className='flex justify-center items-center font-semibold text-white p-1 rounded-md w-[40%] bg-gray-500 border border-gray-700'>{timeLeft}</span>
+                    :
+                    <button type='button' className='font-semibold text-white p-1 rounded-md w-[40%] border border-blue-900  bg-blue-900 hover:bg-blue-950 hover:border-blue-950' onClick={otpHandler}>Resend</button>
+                }
             </div>
-
-            <div className='flex w-full justify-between'>
-                <button className={buttonPrimary} type='button' onClick={() => { navigate('/forgot-password/find-email') }}>Previous</button>
-
-                <button className={buttonPrimary} type='submit'>
-                    {isloading ?
-                        <img src={loader} alt="Loading..." className='h-6' />
-                        :
-                        <>Next</>
-                    }
-                </button>
-            </div>
+            {formik.touched.otp && formik.errors.otp && <div className="my-1 w-full text-red-600">{formik.errors.otp}</div>}
+            <button className={`${buttonPrimary} w-full mt-2`} type='submit'>
+                {isloading ?
+                    <img src={loader} alt="Loading..." className='h-6' />
+                    :
+                    <>Next</>
+                }
+            </button>
             {isError && <span className='font-semibold text-sm text-red-700 flex justify-center items-center'>{isError}</span>}
         </form>
     )

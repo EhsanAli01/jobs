@@ -1,12 +1,9 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
-import { Outlet, useNavigate } from 'react-router-dom';
-import { TiTick } from "react-icons/ti";
-import { twMerge } from 'tailwind-merge'
-import ProgressContext from './ContextProvider';
+import React, { useEffect } from 'react';
+import { Link, Outlet, useNavigate } from 'react-router-dom';
+import { CiLock } from "react-icons/ci";
 
 const ForgotPassword = () => {
     // States and Variable    
-    const { currentState, setCurrentState } = useContext(ProgressContext);
     const navigate = useNavigate();
 
 
@@ -19,59 +16,24 @@ const ForgotPassword = () => {
     }, [])
 
 
-
-
-    // Tailwind Merge
-    const progressBarStyle1 = twMerge(`transition-all duration-300 border border-gray-800 h-10 w-10 rounded-full bg-gray-800 flex justify-center items-center text-xl ${currentState >= 1 ? `text-white bg-green-700 border-green-700` : ''}`)
-
-    const progressBarStyle2 = twMerge(`transition-all duration-300 border border-gray-800 h-10 w-10 rounded-full bg-gray-800 flex justify-center items-center text-xl ${currentState >= 2 ? `text-white bg-green-700 border-green-700` : ''}`)
-
-    const progressBarStyle3 = twMerge(`transition-all duration-300 border border-gray-800 h-10 w-10 rounded-full bg-gray-800 flex justify-center items-center text-xl ${currentState >= 3 ? `text-white bg-green-700 border-green-700` : ''}`)
-
-    const progressBarDivStyle1 = twMerge(`transition-all duration-300 border-2 border-gray-800 h-20 w-0 ${currentState >= 2 ? 'bg-green-700 border-green-700' : ''}`)
-
-    const progressBarDivStyle2 = twMerge(`transition-all duration-300 border-2 border-gray-800 h-20 w-0 ${currentState >= 3 ? 'bg-green-700 border-green-700' : ''}`)
-
-
     return (
         <section className='py-10 min-h-screen flex justify-center items-center bg-slate-100'>
-            <div className='rounded-2xl overflow-hidden border border-gray-400 w-[850px] flex justify-center items-center h-[400px] bg-white shadow-lg'>
+            <div className='rounded-lg border border-gray-400 w-96 flex justify-between items-center flex-col px-8 py-10 gap-3 min-h-[500px] bg-white shadow-lg'>
 
-                <div className='h-full w-[35%] bg-gray-400 flex p-10 justify-between gap-2 items-center'>
-                    <div className='flex h-full flex-col items-center justify-between gap-1'>
-
-                        <div className={progressBarStyle1}>
-                            {currentState >= 1 && <TiTick />}
-                        </div>
-
-                        <div className={progressBarDivStyle1}></div>
-
-                        <div className={progressBarStyle2}>
-                            {currentState >= 2 && <TiTick />}
-                        </div>
-
-                        <div className={progressBarDivStyle2}></div>
-
-                        <div className={progressBarStyle3}>
-                            {currentState >= 3 && <TiTick />}
-                        </div>
-
-                    </div>
-                    <div className='py-1 h-full w-full flex flex-col justify-between text-gray-800 font-bold text-xl'>
-                        <h1>Step 1</h1>
-                        <h1>Step 2</h1>
-                        <h1>Step 3</h1>
-                    </div>
-                </div>
-
-
-                <div className='h-full w-[65%] p-10 flex justify-center items-center flex-col gap-2'>
+                <div className='w-full flex gap-1 flex-col justify-center items-center'>
+                    <CiLock className='text-5xl text-red-600' />
                     <h1 className='text-2xl font-semibold'>Reset Password</h1>
+                    <div className='border border-gray-500 w-full my-2'></div>
+                </div> 
 
+                <div className='w-full'>
                     <section className='h-full w-full flex items-center'>
                         <Outlet />
                     </section>
+                    <p className='w-full text-gray-600'>Don't have an Account? <Link to="/signup" className='font-bold text-gray-900' onClick={() => localStorage.clear()} >Create One</Link></p>
                 </div>
+
+                <div className='h-[60px]'></div>
             </div >
         </section >
     )

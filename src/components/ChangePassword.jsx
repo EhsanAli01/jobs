@@ -1,18 +1,20 @@
-import React, { useContext, useEffect, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import React, { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useFormik } from 'formik';
 import axios from 'axios';
 import { z } from 'zod';
 import loader from '../assets/loader.gif';
 import { twMerge } from 'tailwind-merge'
-import ProgressContext from './ContextProvider';
+import Alert from '@mui/material/Alert';
+import CheckIcon from '@mui/icons-material/Check';
+
 
 const ChangePassword = () => {
     // States and Variables
-    const { currentState, setCurrentState } = useContext(ProgressContext);
     const [isloading, setloading] = useState(false);
     const [isError, setError] = useState('');
     const baseUrl = 'http://localhost:3000/';
+    const [change, setChange] = useState(false);
     const navigate = useNavigate();
 
     // Functions
@@ -24,13 +26,18 @@ const ChangePassword = () => {
             .regex(/[a-z]/, { message: "Password must contain at least one lowercase letter" })
             .regex(/[A-Z]/, { message: "Password must contain at least one uppercase letter" })
             .regex(/[0-9]/, { message: "Password must contain at least one number" })
-            .regex(/[^a-zA-Z0-9]/, { message: "Password must contain at least one special character" })
-    });
+            .regex(/[^a-zA-Z0-9]/, { message: "Password must contain at least one special character" }),
+        confirmPassword: z.string({ message: "Confirm Password is required" }).min(1, "Confirm Password is required")
+    }).refine(data => data.newPassword === data.confirmPassword, {
+        message: "Passwords don't match",
+        path: ["confirmPassword"],
+    })
 
     const formik = useFormik({
         initialValues: {
             email: '',
             newPassword: '',
+            confirmPassword: ''
         },
         validate: (values) => {
             try {
@@ -50,13 +57,23 @@ const ChangePassword = () => {
             }
         },
         onSubmit: (values) => {
+            console.log(values);
             setloading(true);
-            axios.patch(`${baseUrl}auth/password-reset/update-password`, values)
+
+            const data = {
+                "email": values.email,
+                "newPassword": values.newPassword
+            }
+
+            axios.patch(`${baseUrl}auth/password-reset/update-password`, data)
                 .then(result => {
                     console.log(result);
                     setloading(false);
+                    setChange(true);
                     localStorage.clear();
-                    navigate('/login');
+                    setTimeout(() => {
+                        navigate('/login');
+                    }, 1000);
                 })
                 .catch(error => {
                     console.log(error);
@@ -68,66 +85,64 @@ const ChangePassword = () => {
 
     // UseEffects
     useEffect(() => {
-        setCurrentState(3);
-    }, [])
-
-    useEffect(() => {
-        const email = localStorage.getItem('email');
-        formik.setFieldValue('email', email);
-    }, [])
-
-    useEffect(() => {
         const available = localStorage.getItem('available');
         const verified = localStorage.getItem('verified');
 
-        if (!available && !verified) {
+        if (available === 'false') {
             navigate('/forgot-password/find-email');
         }
 
-        if (!verified) {
+        if (verified === 'false') {
             navigate('/forgot-password/otp-verification');
         }
+
+        const email = localStorage.getItem('email');
+        formik.setFieldValue('email', email);
     }, [])
 
 
     // Tailwind Merge
     const button = twMerge('w-32 py-1 rounded-lg text-white font-semibold transition-all duration-200 flex justify-center items-center h-10')
-
-    const buttonPrimary = twMerge(button, 'border border-blue-900 bg-blue-900 hover:bg-blue-950 hover:border-blue-950')
-
     const buttonSuccess = twMerge(button, 'border border-green-900 bg-green-900 hover:bg-green-950 hover:border-green-950')
-
-    const disabledButton = twMerge('border border-gray-600 w-32 py-1 rounded-lg text-white bg-gray-600 font-semibold flex justify-center items-center h-10 cursor-default')
 
 
     return (
-        <form onSubmit={formik.handleSubmit} className='w-full h-full flex flex-col justify-center items-center'>
-            <div className='w-full flex flex-col gap-2 h-[80%] justify-center'>
-                <label htmlFor="newPassword" className='w-full text-xl font-semibold'>New Password</label>
-                <input
-                    id='newPassword'
-                    type="password"
-                    placeholder='Enter new password'
-                    value={formik.values.newPassword}
-                    className='border border-gray-500 px-3 w-[80%] py-1 rounded-md bg-gray-100 outline-none'
-                    onChange={formik.handleChange}
-                    onBlur={formik.handleBlur}
-                />
-                <p className='w-full text-gray-600'>Don't have an Account? <Link to="/signup" className='font-bold text-gray-900' onClick={() => localStorage.clear()}>Create One</Link></p>
-                {formik.touched.newPassword && formik.errors.newPassword && <div className="my-1 w-full text-red-600">{formik.errors.newPassword}</div>}
-            </div>
-
-            <div className='flex w-full justify-between'>
-                <button className={buttonPrimary} type='button' onClick={() => { navigate('/forgot-password/otp-verification') }}>Previous</button>
-
-                <button className={buttonSuccess} type='submit'>
+        <form onSubmit={formik.handleSubmit} className='gap-[10px] w-full h-full flex flex-col py-5 justify-center items-center'>
+            <label htmlFor="newPassword" className='w-full text-[19px] font-semibold'>New Password</label>
+            <input
+                id='newPassword'
+                type="password"
+                placeholder='Enter new password'
+                value={formik.values.newPassword}
+                className='border border-gray-500 px-3 w-full py-1 rounded-md bg-gray-100 outline-none'
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+            />
+            {formik.touched.newPassword && formik.errors.newPassword && <div className="my-1 w-full text-red-600">{formik.errors.newPassword}</div>}
+            <label htmlFor="confirmPassword" className='w-full text-[19px] font-semibold'>Confirm Password</label>
+            <input
+                id='confirmPassword'
+                type="password"
+                placeholder='Confirm new password'
+                value={formik.values.confirmPassword}
+                className='border border-gray-500 px-3 w-full py-1 rounded-md bg-gray-100 outline-none'
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+            />
+            {formik.touched.confirmPassword && formik.errors.confirmPassword && <div className="my-1 w-full text-red-600">{formik.errors.confirmPassword}</div>}
+            {!change ?
+                <button className={`${buttonSuccess} w-full mt-2`} type='submit'>
                     {isloading ?
                         <img src={loader} alt="Loading..." className='h-6' />
                         :
-                        <>OK?</>
+                        <>Submit</>
                     }
                 </button>
-            </div>
+                :
+                <Alert icon={<CheckIcon fontSize="inherit" />} severity="success" className='w-full flex justify-center'>
+                    Password Changed
+                </Alert>
+            }
             {isError && <span className='font-semibold text-sm text-red-700 flex justify-center items-center'>{isError}</span>}
         </form>
     )

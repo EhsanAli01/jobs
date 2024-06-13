@@ -17,7 +17,8 @@ import ForgotPassword from './components/ForgotPassword.jsx';
 import CheckEmail from './components/CheckEmail.jsx';
 import VerifyOtp from './components/VerifyOtp.jsx';
 import ChangePassword from './components/ChangePassword.jsx';
-import { ContextProvider } from './components/ContextProvider.jsx';
+import ApplyJob from './components/ApplyJob.jsx';
+import Requests from './components/Requests.jsx';
 
 const router = createBrowserRouter([
   { path: '/login', element: <Login /> },
@@ -37,9 +38,10 @@ const router = createBrowserRouter([
         path: '/user', element: <User />, children: [
           { path: '', element: <Navigate to="home" replace /> },
           { path: 'home', element: <DisplayJobs /> },
-          { path: 'createjob', element: <CreateJob /> },
+          { path: 'createjob/:id', element: <CreateJob /> },
           { path: 'apply', element: <Apply /> },
           { path: 'card-details/:id', element: <CardDetails /> },
+          { path: 'requests/:id', element: <Requests /> },
           {
             path: 'profile', element: <Profile />, children: [
               { path: 'update', element: <UpdateProfile /> }
@@ -53,6 +55,7 @@ const router = createBrowserRouter([
           { path: 'home', element: <DisplayJobs /> },
           { path: 'apply', element: <Apply /> },
           { path: 'card-details/:id', element: <CardDetails /> },
+          { path: 'ApplyJob/:id', element: <ApplyJob /> },
           {
             path: 'profile', element: <Profile />, children: [
               { path: 'update', element: <UpdateProfile /> }
@@ -66,9 +69,7 @@ const router = createBrowserRouter([
 );
 
 ReactDOM.createRoot(document.getElementById('root')).render(
-  <ContextProvider >
-    <React.StrictMode>
-      <RouterProvider router={router} />
-    </React.StrictMode>
-  </ContextProvider>
+  <React.StrictMode>
+    <RouterProvider router={router} />
+  </React.StrictMode>
 );

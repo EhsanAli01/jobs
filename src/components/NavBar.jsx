@@ -11,6 +11,7 @@ const Navbar = () => {
     const [isOpen, setIsOpen] = useState(false);
     const baseUrl = 'http://localhost:3000/';
     const navigate = useNavigate();
+    const userId = localStorage.getItem('id');
 
     const handleClickOutside = (event) => {
         if (ref.current && !ref.current.contains(event.target)) {
@@ -28,10 +29,8 @@ const Navbar = () => {
     useEffect(() => {
         const token = localStorage.getItem('token');
         const id = localStorage.getItem('id');
-        console.log(id);
         axios.get(`${baseUrl}user/${id}`, { headers: { "Authorization": `Bearer ${token}` } })
             .then(result => {
-                console.log(result.data.message);
                 setUserData(result.data.message);
             })
             .catch(error => {
@@ -44,16 +43,8 @@ const Navbar = () => {
     };
 
 
-    // const menuHandler = (condition) => {
-    //     const menuBox = document.getElementById('menu-box');
-
-    //     if (condition === 'open-menu') menuBox.classList.remove('hidden');
-    //     if (condition === 'close-menu') menuBox.classList.add('hidden');
-    // };
-
-
     return (
-        <nav id='navBar' className='h-[75px] py-4 border-b border-gray-400 flex items-center justify-between bg-slate-50 sticky top-0 transition-all duration-300 z-30'>
+        <nav id='navBar' className='h-[75px] py-4 border-b border-gray-400 flex items-center justify-between bg-slate-50 sticky top-0 transition-all duration-300 z-30 blr'>
             <div className='h-full flex items-center mx-24 w-64 max-[1135px]:w-auto max-sm:mx-6'>
                 <img src={logo} alt="Zetro Services" className='h-10' />
             </div>
@@ -62,7 +53,7 @@ const Navbar = () => {
                 <li><NavLink className="transition-colors duration-200 hover:text-blue-800 hover:border-b-2 hover:border-blue-800 hover:py-1" to={userData.userType === 'user' ? `user/home` : `contractor/home`}>Home</NavLink></li>
                 {userData.userType === 'user'
                     &&
-                    <li><NavLink className="transition-colors duration-200 hover:text-blue-800 hover:border-b-2 hover:border-blue-800 hover:py-1" to={`user/createjob`}>Create Job</NavLink></li>
+                    <li><NavLink className="transition-colors duration-200 hover:text-blue-800 hover:border-b-2 hover:border-blue-800 hover:py-1" to={`user/createjob/${userId}`}>Create Job</NavLink></li>
                 }
                 <li><NavLink className="transition-colors duration-200 hover:text-blue-800 hover:border-b-2 hover:border-blue-800 hover:py-1" to={userData.userType === 'user' ? `user/apply` : `contractor/apply`}>Apply</NavLink></li>
             </ul>
@@ -97,21 +88,6 @@ const Navbar = () => {
 
 
             </div>
-
-
-
-            {/* <RiMenu4Fill id='menbar' className='cursor-pointer h-10 w-10 mx-24 min-[1135px]:hidden max-sm:mx-6' onClick={() => menuHandler('open-menu')} />
-
-            <section id='menu-box' className='fixed h-screen transition-all duration-300 bg-black bg-opacity-50 top-0 left-0 w-screen z-10 hidden'>
-                <ul id='menu' className='fixed top-0 right-0 bg-slate-100 opacity-100 h-screen transition-all duration-300 px-10 pt-28 w-72 flex items-center translate-x-60 animate-menu-show flex-col gap-6 shadow-md border-l border-black font-bold z-20 max-sm:w-60'>
-                    <RxCrossCircled className='absolute top-5 right-5 h-8 w-8' onClick={() => menuHandler('close-menu')} />
-                    <li><a href="#" className='text-red-600 border-b-2 border-red-600 py-1'>Home</a></li>
-                    <li><a href="#" className='transition-colors duration-200 hover:text-red-600 hover:border-b-2 hover:border-red-600 hover:py-1'>Jobs</a></li>
-                    <li><a href="#" className='transition-colors duration-200 hover:text-red-600 hover:border-b-2 hover:border-red-600 hover:py-1'>Messages</a></li>
-                    <li><a href="#" className='transition-colors duration-200 hover:text-red-600 hover:border-b-2 hover:border-red-600 hover:py-1'>Profile</a></li>
-                </ul>
-            </section> */}
-
         </nav>
     )
 }

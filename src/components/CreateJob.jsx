@@ -2,7 +2,7 @@ import axios from 'axios';
 import React, { useEffect, useRef, useState } from 'react';
 import { MdOutlineCloudUpload } from "react-icons/md";
 import loader from '../assets/loader.gif';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useFormik } from 'formik';
 import { z } from 'zod';
 import { MdCancel } from "react-icons/md";
@@ -15,6 +15,7 @@ const CreateJob = () => {
     const fileUploadRef = useRef(null);
     const navigate = useNavigate();
     const baseUrl = 'http://localhost:3000/';
+    const { id } = useParams();
 
     const jobSchema = z.object({
         jobTitle: z.string().min(3, 'Job title must be at least 3 characters.').max(30, 'Job title must be less than 30 characters.'),
@@ -25,7 +26,7 @@ const CreateJob = () => {
         location: z.string().min(1, 'Location is required'),
         date: z.string().min(1, 'Date is required.').refine(val => !isNaN(Date.parse(val)), ' Invalid date format'),
         startTime: z.string().min(1, 'Start time is required'),
-        endTime: z.string().min(1, 'End time is required')
+        endTime: z.string().min(1, 'End time is required'),
     });
 
     const formik = useFormik({
@@ -38,7 +39,7 @@ const CreateJob = () => {
             images: [],
             date: '',
             startTime: '',
-            endTime: ''
+            endTime: '',
         },
         validate: (values) => {
             try {
@@ -67,7 +68,7 @@ const CreateJob = () => {
             })
 
             const token = localStorage.getItem('token');
-            axios.post(`${baseUrl}jobs/${localStorage.getItem('userType')}`, form, { headers: { "Authorization": `Bearer ${token}` } })
+            axios.post(`${baseUrl}jobs/${localStorage.getItem('userType')}/${id}`, form, { headers: { "Authorization": `Bearer ${token}` } })
                 .then(result => {
                     console.log(result);
                     setloading(false);
@@ -130,6 +131,9 @@ const CreateJob = () => {
     }
 
     const today = new Date().toISOString().split('T')[0];
+
+
+    console.log(id);
 
     return (
         <section className='py-10 flex justify-center items-center'>

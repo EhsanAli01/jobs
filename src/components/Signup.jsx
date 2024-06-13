@@ -15,7 +15,7 @@ const Signup = () => {
     const userSchema = z.object({
         userType: z.string().min(1, 'User-Type is required'),
         userName: z.string().min(5, 'Minimum 5 characters required').max(10, 'Maximum 10 characters allowed'),
-        email: z.string().email({ message: "Invalid email address" }).min(1, "Email is required"),
+        email: z.string().min(1, "Email is required").email(),
         password: z.string()
             .min(8, { message: "Password must be at least 8 characters long" })
             .max(100, { message: "Password must be less than 100 characters long" })
@@ -55,7 +55,6 @@ const Signup = () => {
             setLoading(true);
             axios.post(`${baseUrl}auth/signup`, values)
                 .then(result => {
-                    console.log(result);
                     const { id, userType, userName, email, description, image } = result.data.message;
                     const token = result.data.token;
                     localStorage.setItem('token', token);
@@ -80,6 +79,9 @@ const Signup = () => {
         const token = localStorage.getItem('token');
         if (token) {
             navigate(`${localStorage.getItem('userType')}`);
+        }
+        else {
+            localStorage.clear();
         }
     }, [])
 
