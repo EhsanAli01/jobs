@@ -39,7 +39,7 @@ a.active {
   @apply text-blue-800 border-b-2 border-blue-800 py-1
 }
 
-.blr {
-  background-color: rgba(255, 255, 255, 0.5) !important;
+.blr {  
+  background-color: rgba(255, 255, 255, 0.6) !important;
   backdrop-filter: blur(30px) !important;
 }

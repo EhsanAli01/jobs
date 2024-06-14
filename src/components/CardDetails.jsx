@@ -60,8 +60,8 @@ const CardDetails = () => {
         <>{
             loading ?
                 <div className='flex justify-center items-center h-96 mt-10'>
-                    <img src={loader} alt='' className='w-60' />
-                </div>
+                    <img src={loader} alt='' />
+                </div> 
                 :
                 <>
                     <div className='text-gray-800 flex justify-between items-center px-10 py-4'>
@@ -69,13 +69,12 @@ const CardDetails = () => {
                             <IoMdArrowRoundBack />
                         </div>
 
-
                         {userType === 'contractor' &&
                             <>
                                 {jobRequest.length > 0 && jobRequest.some(obj => obj.userId === userId) ?
                                     <span className={`${button} bg-gray-500 cursor-default`}>Applied</span>
                                     :
-                                    <button className={buttonPrimary} onClick={() => navigate(`/contractor/ApplyJob/${id}`)}>Apply</button>}
+                                    <button className={buttonPrimary} onClick={() => navigate(`/contractor/apply-job/${id}`)}>Apply</button>}
                             </>
                         }
 

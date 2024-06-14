@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { z } from 'zod';
 import { useFormik } from 'formik';
 import loader from '../assets/loader.gif';
@@ -6,19 +6,29 @@ import { MdOutlineCloudUpload } from "react-icons/md";
 import { ImCancelCircle } from "react-icons/im";
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import Select from 'react-select';
+import skills from '../assets/skills.json';
+import { ReRender } from './context/ContextProvider';
 
 
 const UpdateProfile = () => {
+    // States and Variables
     const [imageUrl, setImageUrl] = useState('');
     const [isLoading, setLoading] = useState(false);
     const [error, setError] = useState('');
-    const updateRef = useRef();
     const baseUrl = 'http://localhost:3000/';
     const navigate = useNavigate();
+    const userType = localStorage.getItem('userType');
+    const { render, setRender } = useContext(ReRender);
 
+    // Schema and validation
     const profileUpdateSchema = z.object({
-        description: z.string().min(15, "Description should be between 15 and 30 characters.").max(80, "Description should be between 15 and 80 characters."),
-        image: z.instanceof(File, "Image must be a file.")
+        image: z.optional(z.instanceof(File, "Image must be a file.").nullable(true)),
+        experience: z.optional(z.string()),
+        education: z.optional(z.string()),
+        languages: z.array(z.optional(z.string())),
+        skills: z.array(z.optional(z.string())).max(5, 'You can select up to 5 skills'),
+        description: z.optional(z.string().max(80, 'Maximum 80 characters are allowed'))
     });
 
     const validate = (values) => {
@@ -41,25 +51,39 @@ const UpdateProfile = () => {
 
     const formik = useFormik({
         initialValues: {
-            description: '',
-            image: null
+            image: null,
+            experience: '',
+            education: '',
+            languages: [],
+            skills: [],
+            description: ''
         },
         validate,
         onSubmit: (values) => {
-            console.log('submit');
             setLoading(true);
+            const { image, experience, education, languages, skills, description } = values;
             const form = new FormData();
 
-            form.append('description', values.description);
-            form.append('image', values.image);
+            image && form.append('image', image);
+            experience && form.append('experience', experience);
+            education && form.append('education', education);
+            languages && languages.forEach((value, index) => {
+                form.append(`languages[${index}]`, value)
+            })
+            skills && skills.forEach((value, index) => {
+                form.append(`skills[${index}]`, value)
+            })
+            description && form.append('description', description);
 
-            const token = getLocalStorageItem('token')
+
+
+            const token = localStorage.getItem('token')
             axios.patch(`${baseUrl}user/update`, form, { headers: { "Authorization": `Bearer ${token}` } })
                 .then(result => {
                     const userType = localStorage.getItem('userType');
                     setLoading(false);
                     navigate(userType === 'user' ? `/user/profile` : `/contractor/profile`);
-                    location.reload();
+                    setRender(render + 1);
                 })
                 .catch(error => {
                     console.log(error);
@@ -69,33 +93,27 @@ const UpdateProfile = () => {
         }
     });
 
+
+    // Functions
     const handleFileChange = (e) => {
         const file = e.target.files[0];
         formik.setFieldValue('image', file);
         setImageUrl(URL.createObjectURL(file));
     };
 
-    const getLocalStorageItem = (key) => {
-        const item = localStorage.getItem(key);
-        return item && item !== 'undefined' ? item : '';
-    };
 
-
-    const outSideClickHandler = (event) => {
-        if (updateRef.current && !updateRef.current.contains(event.target)) {
-            navigate(`/${localStorage.getItem('userType')}/profile`);
-        }
-    }
-
-    useEffect(() => {
-        document.addEventListener('mousedown', outSideClickHandler);
-    }, [])
-
+    // Options
+    const languageOptions = [
+        { value: "English US", label: "English US" },
+        { value: "English UK", label: "English UK" },
+        { value: "Urdu", label: "Urdu" },
+        { value: "Hindi", label: "Hindi" }
+    ];
 
     return (
-        <div className='update-profile absolute w-full top-[75px] h-full bg-black bg-opacity-30'>
+        <div className='update-profile w-full top-[75px] h-auto bg-slate-100'>
             <section className='py-10 flex justify-center items-center'>
-                <form ref={updateRef} onSubmit={formik.handleSubmit} className='rounded-xl border border-gray-500 w-96 bg-white flex justify-center items-center flex-col px-5 py-6 gap-3'>
+                <form onSubmit={formik.handleSubmit} className='rounded-xl border border-gray-500 w-96 bg-white flex justify-center items-center flex-col px-5 py-6 gap-3'>
                     <div className='w-full text-gray-800 text-2xl flex justify-end'>
                         <ImCancelCircle onClick={() => navigate(`/${localStorage.getItem('userType')}/profile`)} className='cursor-pointer' />
                     </div>
@@ -115,12 +133,86 @@ const UpdateProfile = () => {
                     </div>
                     {formik.touched.image && formik.errors.image && <div className="my-1 text-center w-full text-red-600">{formik.errors.image}</div>}
 
+                    {userType === 'contractor' &&
+                        <>
+                            <div className='w-full'>
+                                <label htmlFor="experience" className=' w-full font-semibold'>Experience</label>
+                                <input
+                                    id='experience'
+                                    type="text"
+                                    placeholder='Enter your work experience'
+                                    className='border border-gray-500 px-3 w-full py-1 rounded-md bg-gray-100 outline-none'
+                                    onChange={formik.handleChange}
+                                    onBlur={formik.handleBlur}
+                                />
+                                {formik.touched.experience && formik.errors.experience && <div className="my-1 w-full text-red-600">{formik.errors.experience}</div>}
+                            </div>
+
+                            <div className='w-full'>
+                                <label htmlFor="education" className=' w-full font-semibold'>Education</label>
+                                <input
+                                    id='education'
+                                    type="text"
+                                    placeholder='What is your education'
+                                    className='border border-gray-500 px-3 w-full py-1 rounded-md bg-gray-100 outline-none'
+                                    onChange={formik.handleChange}
+                                    onBlur={formik.handleBlur}
+                                />
+                                {formik.touched.education && formik.errors.education && <div className="my-1 w-full text-red-600">{formik.errors.education}</div>}
+                            </div>
+
+                            <div className='w-full'>
+                                <div className=' w-full font-semibold'>Languages</div>
+                                <Select id='languages' options={languageOptions} isMulti styles={{
+                                    control: (baseStyles, state) => ({
+                                        outline: 'none',
+                                        boxShadow: 'none',
+                                        border: '1px solid rgb(107 114 128)',
+                                        backgroundColor: 'rgb(243 244 246)',
+                                        borderRadius: '0.375rem',
+                                        display: 'flex',
+                                        minHeight: '2rem',
+                                        alignItems: 'center'
+                                    }),
+                                }} className='w-full' onChange={(selectedOptions) => {
+                                    formik.setFieldValue(
+                                        'languages',
+                                        selectedOptions ? selectedOptions.map(option => option.value) : []
+                                    );
+                                }} />
+                                {formik.touched.languages && formik.errors.languages && <div className="my-1 w-full text-red-600">{formik.errors.languages}</div>}
+                            </div>
+
+                            <div className='w-full'>
+                                <div className=' w-full font-semibold'>Skills</div>
+                                <Select id='skills' options={skills} isMulti styles={{
+                                    control: (baseStyles, state) => ({
+                                        outline: 'none',
+                                        boxShadow: 'none',
+                                        border: '1px solid rgb(107 114 128)',
+                                        backgroundColor: 'rgb(243 244 246)',
+                                        borderRadius: '0.375rem',
+                                        display: 'flex',
+                                        minHeight: '2rem',
+                                        alignItems: 'center'
+                                    }),
+                                }} className='w-full' onChange={(selectedOptions) => {
+                                    formik.setFieldValue(
+                                        'skills',
+                                        selectedOptions ? selectedOptions.map(option => option.value) : []
+                                    );
+                                }} />
+                                {formik.touched.skills && formik.errors.skills && <div className="my-1 w-full text-red-600">{formik.errors.skills}</div>}
+                            </div>
+                        </>
+                    }
+
                     <div className='w-full'>
                         <label htmlFor="description" className=' w-full font-semibold'>Description</label>
                         <textarea
                             id="description"
-                            className='outline-none border border-gray-500 w-full h-24 rounded-md px-3 py-1 bg-gray-100'
-                            placeholder='Enter your profile description here...'
+                            className='min-h-32 outline-none border border-gray-500 w-full h-24 rounded-md px-3 py-1 bg-gray-100'
+                            placeholder='More about you...'
                             onChange={formik.handleChange}
                             onBlur={formik.handleBlur}
                         ></textarea>

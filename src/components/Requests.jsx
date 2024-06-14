@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { TiTick } from "react-icons/ti";
 import { FaTimes } from "react-icons/fa";
 import { twMerge } from 'tailwind-merge';
@@ -9,6 +9,7 @@ import loader from '../assets/loader.gif';
 import Alert from '@mui/material/Alert';
 import Stack from '@mui/material/Stack';
 import { ImFileEmpty } from "react-icons/im";
+import { ReRender } from './context/ContextProvider';
 
 const Requests = () => {
     // States and Variables
@@ -21,9 +22,10 @@ const Requests = () => {
     const { id } = useParams();
     const navigate = useNavigate();
     const token = localStorage.getItem('token');
+    const { render } = useContext(ReRender);
 
     // Functions
-    const cardClickHandler = () => {
+    const backButtonHandler = () => {
         navigate(userType === 'user' ? `/user/card-details/${id}` : `/contractor/card-details/${id}`);
     }
 
@@ -55,7 +57,7 @@ const Requests = () => {
                 setError('Error fetching the job details');
                 setLoading(false);
             });
-    }, [declineRequest]);
+    }, [declineRequest, render]);
 
 
     // Tailwind Merge
@@ -67,7 +69,7 @@ const Requests = () => {
 
     return (
         <section className='flex items-center flex-col justify-center gap-10 py-10 px-[200px]'>
-            <div className='border border-gray-400 self-start text-4xl rounded-full transition-all duration-150 cursor-pointer p-1 bg-slate-100 hover:shadow-xl hover:bg-slate-200' onClick={cardClickHandler}>
+            <div className='border border-gray-400 self-start text-4xl rounded-full transition-all duration-150 cursor-pointer p-1 bg-slate-100 hover:shadow-xl hover:bg-slate-200' onClick={backButtonHandler}>
                 <IoMdArrowRoundBack />
             </div>
 
@@ -97,25 +99,29 @@ const Requests = () => {
                                     <div className='flex items-center gap-10 my-3'>
                                         <div className='w-[230px]'>
                                             <h2 className='font-semibold'>Experience:</h2>
-                                            <p className='text-gray-600'>{obj.experience}</p>
+                                            <p className='text-gray-600'>{obj.user.experience}</p>
                                         </div>
                                         <div className='w-[230px]'>
                                             <h2 className='font-semibold'>Education:</h2>
-                                            <p className='text-gray-600'>{obj.education}</p>
+                                            <p className='text-gray-600'>{obj.user.education}</p>
                                         </div>
                                     </div>
                                     <div className='flex flex-col gap-1'>
                                         <h2 className='font-semibold'>Skills:</h2>
-                                        <div className='flex gap-2 flex-wrap'>{obj.skills.map(skill => <span className='text-sm border border-gray-600 bg-gray-800 text-white px-3 py-1 rounded-full'>{skill}</span>)}</div>
+                                        <div className='flex gap-2 flex-wrap'>{obj.user.skills.map(skill => <span className='text-sm border border-gray-600 bg-gray-800 text-white px-3 py-1 rounded-full'>{skill}</span>)}</div>
                                     </div>
                                     <div className='flex flex-col gap-1'>
                                         <h2 className='font-semibold'>Languages:</h2>
-                                        <div className='flex gap-2 flex-wrap'>{obj.languages.map(language => <span className='text-sm border border-gray-600 bg-gray-800 text-white px-3 py-1 rounded-full'>{language}</span>)}</div>
+                                        <div className='flex gap-2 flex-wrap'>{obj.user.languages.map(language => <span className='text-sm border border-gray-600 bg-gray-800 text-white px-3 py-1 rounded-full'>{language}</span>)}</div>
+                                    </div>
+                                    <div>
+                                        <h3 className='font-bold text-gray-900'>Expected Salary:</h3>
+                                        <p className='text-gray-600'>{`${obj.expectedSalary} (${obj.type})`}</p>
                                     </div>
                                     <div className='flex items-center justify-between'>
                                         <div className='flex flex-col gap-1'>
-                                            <h2 className='font-semibold'>More about contractor:</h2>
-                                            <p className='text-gray-900'>{obj.reqDescription}</p>
+                                            <h2 className='font-semibold'>Note:</h2>
+                                            <p className='text-gray-900'>{obj.note}</p>
                                         </div>
                                         <div className='flex gap-2'>
                                             <button type='button' className={buttonPrimary}>Accept <TiTick /></button>

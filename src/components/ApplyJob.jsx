@@ -1,35 +1,33 @@
 import axios from 'axios';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import loader from '../assets/loader.gif';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useFormik } from 'formik';
 import { z } from 'zod';
 import { twMerge } from 'tailwind-merge';
 import Select from 'react-select';
-import skills from '../assets/skills.json';
 
 const ApplyJob = () => {
     const [isloading, setloading] = useState(false);
     const [error, setError] = useState('');
+    const [cardData, setCardData] = useState(null);
     const navigate = useNavigate();
     const { id } = useParams();
     const baseUrl = 'http://localhost:3000/';
+    const userType = localStorage.getItem('userType');
+    const userId = localStorage.getItem('id');
 
     const applicationSchema = z.object({
-        experience: z.string().min(1, 'Experience is required'),
-        education: z.string().min(1, 'Education is required'),
-        languages: z.array(z.string()).min(1, 'Atleast 1 language is required'),
-        skills: z.array(z.string()).min(1, 'Atleast 1 skill is required').max(5, 'You can select up to 5 skills'),
-        reqDescription: z.string().min(20, 'Minimum 20 characters of description is required').max(80, 'Maximum 80 characters are allowed')
+        expectedSalary: z.string().min(1, 'Expected Salary is required'),
+        type: z.string().min(1, 'Type is required'),
+        note: z.string().min(15, 'Minimum 15 characters of note is required').max(80, 'Maximum 80 characters are allowed')
     });
 
     const formik = useFormik({
         initialValues: {
-            experience: '',
-            education: '',
-            languages: [],
-            skills: [],
-            reqDescription: ''
+            expectedSalary: '',
+            type: [],
+            note: ''
         },
         validate: (values) => {
             try {
@@ -57,7 +55,7 @@ const ApplyJob = () => {
                 .then(result => {
                     console.log(result);
                     setloading(false);
-                    navigate('/');
+                    navigate(`/contractor/card-details/${id}`);
                 })
                 .catch(error => {
                     console.log(error);
@@ -67,19 +65,34 @@ const ApplyJob = () => {
         }
     });
 
-    // Options
-    const languageOptions = [
-        { value: "English US", label: "English US" },
-        { value: "English UK", label: "English UK" },
-        { value: "Urdu", label: "Urdu" },
-        { value: "Hindi", label: "Hindi" }
-    ];
+
+    // UseEffects
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        axios.get(`${baseUrl}jobs/${userType}/${id}`, { headers: { "Authorization": `Bearer ${token}` } })
+            .then(result => {
+                setCardData(result.data.message);
+            })
+            .catch(error => {
+                setError('Error fetching the job details');
+            });
+    }, []);
+
+    useEffect(() => {
+        if (cardData?.jobRequest?.length > 0 && cardData?.jobRequest?.some(obj => obj.userId === userId)) navigate(`/contractor/card-details/${id}`);
+    }, [cardData])
 
 
     // Tailwind Merge
     const button = twMerge('w-32 py-1 rounded-lg text-white font-semibold transition-all duration-200 flex justify-center items-center h-10')
     const buttonPrimary = twMerge(button, 'border border-blue-900 bg-blue-900 hover:bg-blue-950 hover:border-blue-950')
 
+
+    // Options
+    const typeOptions = [
+        { value: 'Cash', label: 'Cash' },
+        { value: 'Online', label: 'Online' }
+    ]
 
     return (
         <section className='py-10 min-h-screen flex justify-center items-center bg-slate-100'>
@@ -89,34 +102,21 @@ const ApplyJob = () => {
                 <div className='border border-gray-500 w-full my-2'></div>
 
                 <div className='w-full'>
-                    <label htmlFor="experience" className=' w-full font-semibold'>Experience</label>
+                    <label htmlFor="expectedSalary" className=' w-full font-semibold'>Expected Salary</label>
                     <input
-                        id='experience'
+                        id='expectedSalary'
                         type="text"
-                        placeholder='Enter your work experience'
+                        placeholder='Enter expected salary'
                         className='border border-gray-500 px-3 w-full py-1 rounded-md bg-gray-100 outline-none'
                         onChange={formik.handleChange}
                         onBlur={formik.handleBlur}
                     />
-                    {formik.touched.experience && formik.errors.experience && <div className="my-1 w-full text-red-600">{formik.errors.experience}</div>}
+                    {formik.touched.expectedSalary && formik.errors.expectedSalary && <div className="my-1 w-full text-red-600">{formik.errors.expectedSalary}</div>}
                 </div>
 
                 <div className='w-full'>
-                    <label htmlFor="education" className=' w-full font-semibold'>Education</label>
-                    <input
-                        id='education'
-                        type="text"
-                        placeholder='What is your education'
-                        className='border border-gray-500 px-3 w-full py-1 rounded-md bg-gray-100 outline-none'
-                        onChange={formik.handleChange}
-                        onBlur={formik.handleBlur}
-                    />
-                    {formik.touched.education && formik.errors.education && <div className="my-1 w-full text-red-600">{formik.errors.education}</div>}
-                </div>
-
-                <div className='w-full'>
-                    <label htmlFor="languages" className=' w-full font-semibold'>Languages</label>
-                    <Select id='languages' options={languageOptions} isMulti styles={{
+                    <label htmlFor="type" className=' w-full font-semibold'>Type</label>
+                    <Select id='type' options={typeOptions} styles={{
                         control: (baseStyles, state) => ({
                             outline: 'none',
                             boxShadow: 'none',
@@ -127,47 +127,20 @@ const ApplyJob = () => {
                             minHeight: '2rem',
                             alignItems: 'center'
                         }),
-                    }} className='w-full' onChange={(selectedOptions) => {
-                        formik.setFieldValue(
-                            'languages',
-                            selectedOptions ? selectedOptions.map(option => option.value) : []
-                        );
-                    }} />
-                    {formik.touched.languages && formik.errors.languages && <div className="my-1 w-full text-red-600">{formik.errors.languages}</div>}
+                    }} className='w-full' onChange={(option) => formik.setFieldValue('type', option.value)} />
+                    {formik.touched.type && formik.errors.type && <div className="my-1 w-full text-red-600">{formik.errors.type}</div>}
                 </div>
 
                 <div className='w-full'>
-                    <label htmlFor="skills" className=' w-full font-semibold'>Skills</label>
-                    <Select id='skills' options={skills} isMulti styles={{
-                        control: (baseStyles, state) => ({
-                            outline: 'none',
-                            boxShadow: 'none',
-                            border: '1px solid rgb(107 114 128)',
-                            backgroundColor: 'rgb(243 244 246)',
-                            borderRadius: '0.375rem',
-                            display: 'flex',
-                            minHeight: '2rem',
-                            alignItems: 'center'
-                        }),
-                    }} className='w-full' onChange={(selectedOptions) => {
-                        formik.setFieldValue(
-                            'skills',
-                            selectedOptions ? selectedOptions.map(option => option.value) : []
-                        );
-                    }} />
-                    {formik.touched.skills && formik.errors.skills && <div className="my-1 w-full text-red-600">{formik.errors.skills}</div>}
-                </div>
-
-                <div className='w-full'>
-                    <label htmlFor="reqDescription" className=' w-full font-semibold'>Description</label>
+                    <label htmlFor="note" className=' w-full font-semibold'>Add Note</label>
                     <textarea
-                        id="reqDescription"
-                        className='min-h-24 outline-none border border-gray-500 w-full h-24 rounded-md px-3 py-1 bg-gray-100'
-                        placeholder='More about you...'
+                        id="note"
+                        className='min-h-24 outline-none border border-gray-500 w-full rounded-md px-3 py-1 bg-gray-100'
+                        placeholder='More you want to add...'
                         onChange={formik.handleChange}
                         onBlur={formik.handleBlur}
                     ></textarea>
-                    {formik.touched.reqDescription && formik.errors.reqDescription && <div className="my-1 w-full text-red-600">{formik.errors.reqDescription}</div>}
+                    {formik.touched.note && formik.errors.note && <div className="my-1 w-full text-red-600">{formik.errors.note}</div>}
                 </div>
 
 

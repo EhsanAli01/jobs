@@ -1,9 +1,10 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useContext, useEffect, useRef, useState } from 'react'
 import logo from '../assets/logo.png'
 import { IoNotifications, } from "react-icons/io5";
 import { RiArrowDropDownLine, RiMessengerFill } from "react-icons/ri";
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { ReRender } from './context/ContextProvider';
 
 const Navbar = () => {
     const [userData, setUserData] = useState({});
@@ -12,6 +13,7 @@ const Navbar = () => {
     const baseUrl = 'http://localhost:3000/';
     const navigate = useNavigate();
     const userId = localStorage.getItem('id');
+    const { render } = useContext(ReRender);
 
     const handleClickOutside = (event) => {
         if (ref.current && !ref.current.contains(event.target)) {
@@ -36,7 +38,7 @@ const Navbar = () => {
             .catch(error => {
                 console.log(error);
             })
-    }, [])
+    }, [render])
 
     const toggleOpen = () => {
         setIsOpen(!isOpen);
@@ -45,7 +47,7 @@ const Navbar = () => {
 
     return (
         <nav id='navBar' className='h-[75px] py-4 border-b border-gray-400 flex items-center justify-between bg-slate-50 sticky top-0 transition-all duration-300 z-30 blr'>
-            <div className='h-full flex items-center mx-24 w-64 max-[1135px]:w-auto max-sm:mx-6'>
+            <div className='h-full flex items-center ml-24 w-[300px] max-[1135px]:w-auto max-sm:mx-6'>
                 <img src={logo} alt="Zetro Services" className='h-10' />
             </div>
 
@@ -68,14 +70,14 @@ const Navbar = () => {
 
                 <div className='flex items-center px-0.5 py-0.5 border cursor-pointer border-gray-600 border-solid rounded-full gap-2 relative' onClick={toggleOpen} >
                     <div className='h-8 w-8  border border-gray-600 border-solid rounded-full overflow-hidden'>
-                        <img src={userData.image ? `${baseUrl}${userData.image}` : "https://templates.joomla-monster.com/joomla30/jm-news-portal/components/com_djclassifieds/assets/images/default_profile.png"} alt="userPic" className="w-full h-full object-cover" />
+                        <img src={userData.image && userData.image !== 'null' ? `${baseUrl}${userData.image}` : "https://templates.joomla-monster.com/joomla30/jm-news-portal/components/com_djclassifieds/assets/images/default_profile.png"} alt="userPic" className="w-full h-full object-cover" />
                     </div>
                     <span className='font-semibold max-w-24'>{userData.userName}</span>
                     <RiArrowDropDownLine className='text-2xl' />
                     {isOpen &&
                         <div ref={ref} className='border border-gray-500 cursor-default flex flex-col justify-center items-center py-6 absolute top-10 w-[200px] rounded-lg bg-white gap-2 right-0 px-6'>
                             <div className=' border border-gray-600 rounded-full overflow-hidden w-14 h-14'>
-                                <img src={userData.image ? `${baseUrl}${userData.image}` : "https://templates.joomla-monster.com/joomla30/jm-news-portal/components/com_djclassifieds/assets/images/default_profile.png"} alt="" className='w-full h-full object-cover' />
+                                <img src={userData.image && userData.image !== 'null' ? `${baseUrl}${userData.image}` : "https://templates.joomla-monster.com/joomla30/jm-news-portal/components/com_djclassifieds/assets/images/default_profile.png"} alt="" className='w-full h-full object-cover' />
                             </div>
                             <Link to={userData.userType === 'user' ? `user/profile` : `contractor/profile`} className='transition-all duration-150 text-xl cursor-pointer font-semibold text-teal-950 hover:text-blue-800'>Profile</Link>
                             <div className='border border-gray-500 w-full my-2'></div>
