@@ -5,17 +5,20 @@ import axios from 'axios';
 import Pagination from '@mui/material/Pagination';
 import Stack from '@mui/material/Stack';
 import { IoSearchSharp } from "react-icons/io5";
+import { useDispatch, useSelector } from 'react-redux';
+import { setJobsArray } from '../features/slices/jobSlice';
 
 const HomeBody = () => {
     // States and Variables
     const [isloading, setLoading] = useState(true);
     const baseUrl = 'http://localhost:3000/';
-    const [jobsArray, setJobsArray] = useState([]);
     const [filteredJobs, setFilteredJobs] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [allJobs, setJobs] = useState(true);
     const userType = localStorage.getItem('userType');
     const email = localStorage.getItem('email');
+    const jobsArray = useSelector((state) => state.jobs.value);
+    const dispatch = useDispatch();
 
     const totalPages = Math.ceil(filteredJobs.length / 6);
 
@@ -68,7 +71,7 @@ const HomeBody = () => {
         const token = localStorage.getItem('token');
         axios.get(`${baseUrl}jobs/${localStorage.getItem('userType')}`, { headers: { "Authorization": `Bearer ${token}` } })
             .then(result => {
-                setJobsArray(result.data.message);
+                dispatch(setJobsArray(result.data.message));
                 setFilteredJobs(result.data.message);
                 setLoading(false);
             })
@@ -88,12 +91,19 @@ const HomeBody = () => {
         <main className='h-5/6'>
             <section className='h-24 flex justify-between items-center max-md:flex-col-reverse max-md:my-6 max-md:mx-24 max-sm:mx-6 max-md:h-20'>
                 <div className='mx-24 h-8 border border-blue-950 flex items-center rounded-full overflow-hidden font-semibold max-sm:text-sm max-sm:mx-10'>
-                    <button onClick={() => filterHandler('all')} className={`w-[90px] justify-center flex items-center px-3 py-2 h-full ${allJobs ? 'bg-slate-800 text-white' : ''}`}>All Jobs</button>
                     {
-                        userType === 'user' ?
-                            <button onClick={() => filterHandler('my-jobs')} className={`w-[90px] flex items-center justify-center px-3 py-2 h-full ${allJobs ? '' : 'bg-slate-800 text-white'}`}>My Jobs</button>
-                            :
-                            <button onClick={() => filterHandler('applied')} className={`w-[90px] flex items-center justify-center px-3 py-2 h-full ${allJobs ? '' : 'bg-slate-800 text-white'}`}>Applied</button>
+                        userType === 'user' &&
+                        <>
+                            <button onClick={() => setJobs(true)} className={`w-[90px] justify-center flex items-center px-3 py-2 h-full ${allJobs ? 'bg-slate-800 text-white' : ''}`}>Posted</button>
+                            <button onClick={() => setJobs(false)} className={`w-[90px] flex items-center justify-center px-3 py-2 h-full ${allJobs ? '' : 'bg-slate-800 text-white'}`}>Active</button>
+                        </>
+                    }
+                    {
+                        userType === 'contractor' &&
+                        <>
+                            <button onClick={() => setJobs(true)} className={`w-[90px] flex items-center justify-center px-3 py-2 h-full ${allJobs ? 'bg-slate-800 text-white' : ''}`}>All Jobs</button>
+                            <button onClick={() => setJobs(false)} className={`w-[90px] flex items-center justify-center px-3 py-2 h-full ${allJobs ? '' : 'bg-slate-800 text-white'}`}>Applied</button>
+                        </>
                     }
                 </div>
                 <div id='searchdiv' className='mx-24 w-60 h-8 flex items-center border border-gray-600 rounded-full overflow-hidden  max-sm:mx-10 max-md:w-full' >

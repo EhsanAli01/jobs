@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { CiEdit } from "react-icons/ci";
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { ReRender } from './context/ContextProvider';
+import { ReRender } from '../context/ContextProvider';
 
 const Profile = () => {
     const [userData, setUserData] = useState({});

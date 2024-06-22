@@ -6,10 +6,11 @@ import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
 import { IoMdArrowRoundBack } from "react-icons/io";
 import loader from '../assets/loader.gif';
+import contentLoader from '../assets/lg.gif';
 import Alert from '@mui/material/Alert';
 import Stack from '@mui/material/Stack';
 import { ImFileEmpty } from "react-icons/im";
-import { ReRender } from './context/ContextProvider';
+import { ReRender } from '../context/ContextProvider';
 
 const Requests = () => {
     // States and Variables
@@ -66,16 +67,25 @@ const Requests = () => {
     const buttonPrimary = twMerge(button, 'border border-blue-600 bg-blue-600 hover:bg-blue-800 hover:border-blue-800')
 
 
+    if (loading) {
+        return (
+            <div className='flex justify-center items-center h-96 mt-10'>
+                <img src={contentLoader} alt='Loading...' />
+            </div>
+        );
+    }
+
+
 
     return (
-        <section className='flex items-center flex-col justify-center gap-10 py-10 px-[200px]'>
-            <div className='border border-gray-400 self-start text-4xl rounded-full transition-all duration-150 cursor-pointer p-1 bg-slate-100 hover:shadow-xl hover:bg-slate-200' onClick={backButtonHandler}>
+        <section>
+            <div className='border border-gray-400 text-4xl rounded-full transition-all duration-150 cursor-pointer p-1 bg-slate-100 hover:shadow-xl hover:bg-slate-200 mx-24 my-6 w-12 h-12 flex justify-center items-center' onClick={backButtonHandler}>
                 <IoMdArrowRoundBack />
             </div>
 
             {
                 declined &&
-                <Stack sx={{ width: '100%' }} spacing={2}>
+                <Stack sx={{ margin: '2rem 6rem' }} spacing={2}>
                     <Alert variant="outlined" severity="success">
                         Application Declined
                     </Alert>
@@ -85,7 +95,7 @@ const Requests = () => {
                 <>
                     {
                         requests.map(obj =>
-                            <div className='border border-gray-600 px-6 py-3 flex flex-col justify-center gap-3 rounded-xl shadow-lg shadow-gray-300 w-full' key={obj.id}>
+                            <div className='border border-gray-600 px-6 py-3 flex flex-col justify-center gap-3 rounded-xl shadow-lg shadow-gray-300 mx-24 my-10' key={obj.id}>
                                 <section className='flex items-center gap-4'>
                                     <div className='w-20 h-20 rounded-full overflow-hidden border border-gray-600'>
                                         <img src={obj.user.image ? `${baseUrl}${obj.user.image}` : "https://templates.joomla-monster.com/joomla30/jm-news-portal/components/com_djclassifieds/assets/images/default_profile.png"} alt="userPic" className="w-full h-full object-cover" />

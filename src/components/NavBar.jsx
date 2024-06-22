@@ -4,7 +4,7 @@ import { IoNotifications, } from "react-icons/io5";
 import { RiArrowDropDownLine, RiMessengerFill } from "react-icons/ri";
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { ReRender } from './context/ContextProvider';
+import { ReRender } from '../context/ContextProvider';
 
 const Navbar = () => {
     const [userData, setUserData] = useState({});
@@ -47,8 +47,8 @@ const Navbar = () => {
 
     return (
         <nav id='navBar' className='h-[75px] py-4 border-b border-gray-400 flex items-center justify-between bg-slate-50 sticky top-0 transition-all duration-300 z-30 blr'>
-            <div className='h-full flex items-center ml-24 w-[300px] max-[1135px]:w-auto max-sm:mx-6'>
-                <img src={logo} alt="Zetro Services" className='h-10' />
+            <div className='h-full flex items-center ml-24 w-[300px] max-[1135px]:w-auto max-sm:mx-6 cntrst'>
+                <img src="http://localhost:5173/logo.svg" alt="Jobs" className='h-8' />
             </div>
 
             <ul className='h-full flex items-center gap-12 text-xl font-semibold text-gray-600 max-[1135px]:hidden'>

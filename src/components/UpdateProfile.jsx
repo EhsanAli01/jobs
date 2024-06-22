@@ -8,7 +8,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import Select from 'react-select';
 import skills from '../assets/skills.json';
-import { ReRender } from './context/ContextProvider';
+import { ReRender } from '../context/ContextProvider';
 
 
 const UpdateProfile = () => {

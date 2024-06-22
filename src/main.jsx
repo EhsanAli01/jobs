@@ -19,7 +19,9 @@ import VerifyOtp from './components/VerifyOtp.jsx';
 import ChangePassword from './components/ChangePassword.jsx';
 import ApplyJob from './components/ApplyJob.jsx';
 import Requests from './components/Requests.jsx';
-import { ContextProvider } from './components/context/ContextProvider.jsx';
+import { ContextProvider } from './context/ContextProvider.jsx';
+import { Provider } from 'react-redux';
+import store from './features/store.js';
 
 const router = createBrowserRouter([
   { path: '/login', element: <Login /> },
@@ -66,8 +68,10 @@ const router = createBrowserRouter([
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <ContextProvider >
-      <RouterProvider router={router} />
-    </ContextProvider>
+    <Provider store={store}>
+      <ContextProvider >
+        <RouterProvider router={router} />
+      </ContextProvider>
+    </Provider>
   </React.StrictMode>
 );
