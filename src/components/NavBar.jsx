@@ -4,7 +4,7 @@ import { IoNotifications, } from "react-icons/io5";
 import { RiArrowDropDownLine, RiMessengerFill } from "react-icons/ri";
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { ReRender } from '../context/ContextProvider';
+import { useSelector } from 'react-redux';
 
 const Navbar = () => {
     const [userData, setUserData] = useState({});
@@ -13,7 +13,7 @@ const Navbar = () => {
     const baseUrl = import.meta.env.VITE_BASE_URL;
     const navigate = useNavigate();
     const userId = localStorage.getItem('id');
-    const { render } = useContext(ReRender);
+    const render = useSelector(state => state.render.value);
 
     const handleClickOutside = (event) => {
         if (ref.current && !ref.current.contains(event.target)) {

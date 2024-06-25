@@ -1,6 +1,6 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
-import loader from '../assets/loader.gif';
+import loader from '../../../assets/loader.gif';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useFormik } from 'formik';
 import { z } from 'zod';

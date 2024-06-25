@@ -1,14 +1,15 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { z } from 'zod';
 import { useFormik } from 'formik';
-import loader from '../assets/loader.gif';
+import loader from '../../../assets/loader.gif';
 import { MdOutlineCloudUpload } from "react-icons/md";
 import { ImCancelCircle } from "react-icons/im";
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import Select from 'react-select';
-import skills from '../assets/skills.json';
-import { ReRender } from '../context/ContextProvider';
+import skills from '../../../assets/skills.json';
+import { reRender } from '../../../redux/slices/renderSlice';
+import { useDispatch, useSelector } from 'react-redux';
 
 
 const UpdateProfile = () => {
@@ -18,7 +19,8 @@ const UpdateProfile = () => {
     const [error, setError] = useState('');
     const baseUrl = import.meta.env.VITE_BASE_URL;
     const navigate = useNavigate();
-    const { render, setRender } = useContext(ReRender);
+    const render = useSelector(state => state.render.value);
+    const dispatch = useDispatch();
     const userType = localStorage.getItem('userType');
 
 
@@ -84,7 +86,7 @@ const UpdateProfile = () => {
                     const userType = localStorage.getItem('userType');
                     setLoading(false);
                     navigate(`/${userType}/profile`);
-                    setRender(render + 1);
+                    dispatch(reRender());
                 })
                 .catch(error => {
                     console.log(error);

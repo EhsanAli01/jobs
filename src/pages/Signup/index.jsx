@@ -1,9 +1,10 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
-import loader from '../assets/loader.gif';
+import loader from '../../assets/loader.gif';
 import { Link, useNavigate } from 'react-router-dom';
 import { useFormik } from 'formik';
 import { z } from 'zod';
+import FormInput from '../../components/FormInput';
 
 const Signup = () => {
     const [isLoading, setLoading] = useState(false);
@@ -105,52 +106,14 @@ const Signup = () => {
                 <h1 className='pb-1 font-extrabold text-2xl tracking-[3px]'>Sign Up</h1>
                 <div className='border border-gray-500 w-full my-2'></div>
 
-                <div className='border w-full h-8 border-gray-500 flex rounded-full overflow-hidden'>
+                <div className='border w-full h-8 border-gray-500 flex rounded-lg overflow-hidden'>
                     <button type='button' className={`w-[50%] h-full px-2 py-0.5 font-semibold text-sm tracking-wider ${isUser ? 'bg-blue-950 text-white' : ''} `} onClick={() => typeClickHandler('user')}>User</button>
                     <button type='button' className={`w-[50%] h-full px-2 py-0.5 font-semibold text-sm tracking-wider ${isUser ? '' : 'bg-blue-950 text-white'}`} onClick={() => typeClickHandler('contractor')}>Contractor</button>
                 </div>
 
-                <div className='w-full'>
-                    <label htmlFor="userName" className='w-full font-semibold'>Username</label>
-                    <input
-                        id='userName'
-                        type="text"
-                        placeholder='Enter Username'
-                        className='border border-gray-500 px-3 w-full py-1 rounded-md bg-gray-100 outline-none'
-                        onChange={formik.handleChange}
-                        onBlur={formik.handleBlur}
-                        value={formik.values.userName}
-                    />
-                    {formik.touched.userName && formik.errors.userName && <div className="my-1 w-full text-red-600">{formik.errors.userName}</div>}
-                </div>
-
-                <div className='w-full'>
-                    <label htmlFor="email" className='w-full font-semibold'>Email</label>
-                    <input
-                        id='email'
-                        type="email"
-                        placeholder='Enter Email'
-                        className='border border-gray-500 px-3 w-full py-1 rounded-md bg-gray-100 outline-none'
-                        onChange={formik.handleChange}
-                        onBlur={formik.handleBlur}
-                        value={formik.values.email}
-                    />
-                    {formik.touched.email && formik.errors.email && <div className="my-1 w-full text-red-600">{formik.errors.email}</div>}
-                </div>
-
-                <div className='w-full'>
-                    <label htmlFor="password" className='w-full font-semibold'>Password</label>
-                    <input
-                        id='password'
-                        type="password"
-                        placeholder='Enter Password'
-                        className='border border-gray-500 px-3 w-full py-1 rounded-md bg-gray-100 outline-none'
-                        onChange={formik.handleChange}
-                        onBlur={formik.handleBlur}
-                        value={formik.values.password}
-                    />
-                    {formik.touched.password && formik.errors.password && <div className="my-1 w-full text-red-600">{formik.errors.password}</div>}
-                </div>
+                <FormInput id={'userName'} name={'userName'} type={'text'} placeholder='Enter your name' formik={formik} />
+                <FormInput id={'email'} name={'email'} type={'email'} placeholder='Enter Email' formik={formik} />
+                <FormInput id={'password'} name={'password'} type={'password'} placeholder='Enter Password' formik={formik} />
 
                 <button className='border border-blue-950 w-full py-1 rounded-lg text-white bg-blue-950 font-semibold my-3 transition-all duration-200 hover:bg-blue-700 hover:border-blue-700 flex justify-center items-center h-10' type='submit'>
                     {isLoading ?

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import CardBox from './CardBox';
+import CardBox from './components/CardBox';
 import Pagination from '@mui/material/Pagination';
 import Stack from '@mui/material/Stack';
 import { IoSearchSharp } from "react-icons/io5";

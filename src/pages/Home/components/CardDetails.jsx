@@ -6,11 +6,10 @@ import { MdTimer } from "react-icons/md";
 import { IoMdArrowRoundBack } from "react-icons/io";
 import axios from 'axios';
 import { twMerge } from 'tailwind-merge';
-import { formatTime, formatDate } from '../../script';
-import loader from '../assets/lg.gif';
+import { formatTime, formatDate } from '../../../../script';
+import loader from '../../../assets/lg.gif';
 import { useDispatch, useSelector } from 'react-redux';
-import { setCardData, setJobRequests } from '../redux/slices/jobSlice';
-import { ReRender } from '../context/ContextProvider';
+import { setCardData, setJobRequests } from '../../../redux/slices/jobSlice';
 
 const CardDetails = () => {
     const cardData = useSelector((state) => state.cardData.value);
@@ -20,7 +19,7 @@ const CardDetails = () => {
     const { id } = useParams();
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
-    const { render } = useContext(ReRender);
+    const render = useSelector(state => state.render.value);
 
     const baseUrl = import.meta.env.VITE_BASE_URL;
     const userType = localStorage.getItem('userType');

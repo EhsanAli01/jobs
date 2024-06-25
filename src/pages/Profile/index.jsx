@@ -1,15 +1,15 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { CiEdit } from "react-icons/ci";
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { ReRender } from '../context/ContextProvider';
+import { useSelector } from 'react-redux';
 
 const Profile = () => {
     const [userData, setUserData] = useState({});
     const baseUrl = import.meta.env.VITE_BASE_URL;
     const navigate = useNavigate();
     const userType = localStorage.getItem('userType');
-    const { render } = useContext(ReRender);
+    const render = useSelector(state => state.render.value);
 
     useEffect(() => {
         const token = localStorage.getItem('token');

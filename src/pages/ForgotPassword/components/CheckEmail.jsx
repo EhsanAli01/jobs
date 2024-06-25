@@ -3,8 +3,9 @@ import { useNavigate } from 'react-router-dom'
 import { useFormik } from 'formik';
 import axios from 'axios';
 import { z } from 'zod';
-import loader from '../assets/loader.gif';
+import loader from '../../../assets/loader.gif';
 import { twMerge } from 'tailwind-merge'
+import FormInput from '../../../components/FormInput';
 
 const CheckEmail = () => {
     // States and Variables
@@ -21,26 +22,28 @@ const CheckEmail = () => {
             .email({ message: "Invalid email address" })
     });
 
+    const validate = (values) => {
+        try {
+            userSchema.parse(values);
+            return {}
+        } catch (error) {
+            if (error instanceof z.ZodError) {
+                const fieldErrors = {};
+                error.errors.forEach(err => {
+                    if (!fieldErrors[err.path[0]]) {
+                        fieldErrors[err.path[0]] = err.message;
+                    }
+                });
+                return fieldErrors;
+            }
+        }
+    }
+
     const formik = useFormik({
         initialValues: {
             email: '',
         },
-        validate: (values) => {
-            try {
-                userSchema.parse(values);
-                return {}
-            } catch (error) {
-                if (error instanceof z.ZodError) {
-                    const fieldErrors = {};
-                    error.errors.forEach(err => {
-                        if (!fieldErrors[err.path[0]]) {
-                            fieldErrors[err.path[0]] = err.message;
-                        }
-                    });
-                    return fieldErrors;
-                }
-            }
-        },
+        validate,
         onSubmit: (values) => {
             setloading(true);
             axios.post(`${baseUrl}auth/password-reset/find-email`, values)
@@ -79,17 +82,9 @@ const CheckEmail = () => {
 
     return (
         <form onSubmit={formik.handleSubmit} className='gap-[10px] w-full h-full flex flex-col py-5 justify-center items-center'>
-            <label htmlFor="email" className='text-2xl w-full font-semibold'>Email</label>
-            <input
-                id='email'
-                type="email"
-                placeholder='Enter Email'
-                value={formik.values.email}
-                className='border border-gray-500 px-3 w-full py-1 rounded-md bg-gray-100 outline-none'
-                onChange={handleEmailChange}
-                onBlur={formik.handleBlur}
-            />
-            {formik.touched.email && formik.errors.email && <div className="w-full text-red-600">{formik.errors.email}</div>}
+
+            <FormInput id='email' name='email' type='email' placeholder='Enter Email' formik={formik} />
+
             <button className={`${buttonPrimary} w-full mt-2`} type='submit'>
                 {isloading ?
                     <img src={loader} alt="Loading..." className='h-6' />

@@ -1,12 +1,13 @@
 import axios from 'axios';
 import React, { useEffect, useRef, useState } from 'react';
 import { MdOutlineCloudUpload } from "react-icons/md";
-import loader from '../assets/loader.gif';
+import loader from '../../assets/loader.gif';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useFormik } from 'formik';
 import { z } from 'zod';
 import { MdCancel } from "react-icons/md";
 import Select from 'react-select';
+import FormInput from '../../components/FormInput.jsx';
 
 const CreateJob = () => {
     const [isloading, setloading] = useState(false);
@@ -142,18 +143,7 @@ const CreateJob = () => {
                 <h1 className='pb-1 font-bold text-xl'>Create Job</h1>
                 <div className='border border-gray-500 w-full my-2'></div>
 
-                <div className='w-full'>
-                    <label htmlFor="jobTitle" className=' w-full font-semibold'>Job Title</label>
-                    <input
-                        id='jobTitle'
-                        type="text"
-                        placeholder='Enter job title'
-                        className='border border-gray-500 h-8 px-3 w-full py-1 rounded-md bg-gray-100 outline-none'
-                        onChange={formik.handleChange}
-                        onBlur={formik.handleBlur}
-                    />
-                    {formik.touched.jobTitle && formik.errors.jobTitle && <div className="my-1 w-full text-red-600">{formik.errors.jobTitle}</div>}
-                </div>
+                <FormInput id={'jobTitle'} name={'jobTitle'} type={'text'} placeholder='Enter Job Title' formik={formik} />
 
                 <div className='w-full'>
                     <label htmlFor="Category" className=' w-full font-semibold'>Category</label>
@@ -201,18 +191,7 @@ const CreateJob = () => {
                     {formik.touched.description && formik.errors.description && <div className="my-1 w-full text-red-600">{formik.errors.description}</div>}
                 </div>
 
-                <div className='w-full'>
-                    <label htmlFor="location" className='w-full font-semibold'>Location</label>
-                    <input
-                        id='location'
-                        type="text"
-                        placeholder='Enter your location'
-                        className='outline-none border border-gray-500 px-3 w-full py-1 rounded-md bg-gray-100'
-                        onChange={formik.handleChange}
-                        onBlur={formik.handleBlur}
-                    />
-                    {formik.touched.location && formik.errors.location && <div className="my-1 w-full text-red-600">{formik.errors.location}</div>}
-                </div>
+                <FormInput id={'location'} name={'location'} type={'text'} placeholder='Enter location' formik={formik} />
 
                 <div className='w-full'>
                     <h2 className='w-full font-semibold'>Upload Images</h2>

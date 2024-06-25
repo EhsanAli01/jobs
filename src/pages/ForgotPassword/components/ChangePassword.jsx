@@ -3,10 +3,11 @@ import { useNavigate } from 'react-router-dom'
 import { useFormik } from 'formik';
 import axios from 'axios';
 import { z } from 'zod';
-import loader from '../assets/loader.gif';
+import loader from '../../../assets/loader.gif';
 import { twMerge } from 'tailwind-merge'
 import Alert from '@mui/material/Alert';
 import CheckIcon from '@mui/icons-material/Check';
+import FormInput from '../../../components/FormInput';
 
 
 const ChangePassword = () => {
@@ -33,29 +34,31 @@ const ChangePassword = () => {
         path: ["confirmPassword"],
     })
 
+    const validate = (values) => {
+        try {
+            userSchema.parse(values);
+            return {}
+        } catch (error) {
+            if (error instanceof z.ZodError) {
+                const fieldErrors = {};
+                error.errors.forEach(err => {
+                    if (!fieldErrors[err.path[0]]) {
+                        fieldErrors[err.path[0]] = err.message;
+                    }
+                });
+                return fieldErrors;
+            }
+            return {}
+        }
+    }
+
     const formik = useFormik({
         initialValues: {
             email: '',
             newPassword: '',
             confirmPassword: ''
         },
-        validate: (values) => {
-            try {
-                userSchema.parse(values);
-                return {}
-            } catch (error) {
-                if (error instanceof z.ZodError) {
-                    const fieldErrors = {};
-                    error.errors.forEach(err => {
-                        if (!fieldErrors[err.path[0]]) {
-                            fieldErrors[err.path[0]] = err.message;
-                        }
-                    });
-                    return fieldErrors;
-                }
-                return {}
-            }
-        },
+        validate,
         onSubmit: (values) => {
             console.log(values);
             setloading(true);
@@ -108,28 +111,10 @@ const ChangePassword = () => {
 
     return (
         <form onSubmit={formik.handleSubmit} className='gap-[10px] w-full h-full flex flex-col py-5 justify-center items-center'>
-            <label htmlFor="newPassword" className='w-full text-[19px] font-semibold'>New Password</label>
-            <input
-                id='newPassword'
-                type="password"
-                placeholder='Enter new password'
-                value={formik.values.newPassword}
-                className='border border-gray-500 px-3 w-full py-1 rounded-md bg-gray-100 outline-none'
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-            />
-            {formik.touched.newPassword && formik.errors.newPassword && <div className="my-1 w-full text-red-600">{formik.errors.newPassword}</div>}
-            <label htmlFor="confirmPassword" className='w-full text-[19px] font-semibold'>Confirm Password</label>
-            <input
-                id='confirmPassword'
-                type="password"
-                placeholder='Confirm new password'
-                value={formik.values.confirmPassword}
-                className='border border-gray-500 px-3 w-full py-1 rounded-md bg-gray-100 outline-none'
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-            />
-            {formik.touched.confirmPassword && formik.errors.confirmPassword && <div className="my-1 w-full text-red-600">{formik.errors.confirmPassword}</div>}
+
+            <FormInput id='newPassword' name='newPassword' type='password' placeholder='Enter new password' formik={formik} />
+            <FormInput id='comfirmPassword' name='confirmPassword' type='password' placeholder='Confirm new password' formik={formik} />
+
             {!change ?
                 <button className={`${buttonSuccess} w-full mt-2`} type='submit'>
                     {isloading ?

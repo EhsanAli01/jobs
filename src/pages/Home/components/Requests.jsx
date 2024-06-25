@@ -5,13 +5,12 @@ import { twMerge } from 'tailwind-merge';
 import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
 import { IoMdArrowRoundBack } from "react-icons/io";
-import loader from '../assets/loader.gif';
-import contentLoader from '../assets/lg.gif';
+import loader from '../../../assets/loader.gif';
+// import contentLoader from '../assets/lg.gif';
 import Alert from '@mui/material/Alert';
 import Stack from '@mui/material/Stack';
-import { ReRender } from '../context/ContextProvider';
 import { useDispatch, useSelector } from 'react-redux';
-import { setJobRequests } from '../redux/slices/jobSlice';
+import { setJobRequests } from '../../../redux/slices/jobSlice';
 
 const Requests = () => {
     // States and Variables
@@ -23,7 +22,7 @@ const Requests = () => {
     const { id } = useParams();
     const navigate = useNavigate();
     const token = localStorage.getItem('token');
-    const { render } = useContext(ReRender);
+    const render = useSelector(state => state.render.value);
     const requests = useSelector(state => state.jobRequest.value);
     const dispatch = useDispatch();
 

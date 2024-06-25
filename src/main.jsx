@@ -2,26 +2,32 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import { createBrowserRouter, Navigate, RouterProvider } from 'react-router-dom';
-import CreateJob from './components/CreateJob.jsx';
-import DisplayJobs from './components/DisplayJobs.jsx';
-import Apply from './components/Apply.jsx';
-import CardDetails from './components/CardDetails.jsx';
-import Profile from './components/Profile.jsx';
-import Login from './components/Login.jsx';
-import Signup from './components/Signup.jsx';
-import UpdateProfile from './components/UpdateProfile.jsx';
-import User from './components/User.jsx';
-import Contractor from './components/Contractor.jsx';
-import App from './App.jsx';
-import ForgotPassword from './components/ForgotPassword.jsx';
-import CheckEmail from './components/CheckEmail.jsx';
-import VerifyOtp from './components/VerifyOtp.jsx';
-import ChangePassword from './components/ChangePassword.jsx';
-import ApplyJob from './components/ApplyJob.jsx';
-import Requests from './components/Requests.jsx';
-import { ContextProvider } from './context/ContextProvider.jsx';
 import { Provider } from 'react-redux';
 import store from './redux/store.js';
+
+import App from './App.jsx';
+import Login from './pages/Login';
+import ForgotPassword from './pages/ForgotPassword';
+import Signup from './pages/Signup';
+import CheckEmail from './pages/ForgotPassword/components/CheckEmail.jsx';
+import VerifyOtp from './pages/ForgotPassword/components/VerifyOtp.jsx';
+import ChangePassword from './pages/ForgotPassword/components/ChangePassword.jsx';
+
+import User from './components/User.jsx';
+import Contractor from './components/Contractor.jsx';
+
+import DisplayJobs from './pages/Home';
+import CardDetails from './pages/Home/components/CardDetails.jsx';
+import Requests from './pages/Home/components/Requests.jsx';
+import ApplyJob from './pages/Home/components/ApplyJob.jsx';
+
+import CreateJob from './pages/CreateJob';
+import Apply from './pages/Apply';
+
+import Profile from './pages/Profile';
+import UpdateProfile from './pages/Profile/components/UpdateProfile.jsx';
+
+
 
 const router = createBrowserRouter([
   { path: '/login', element: <Login /> },
@@ -69,9 +75,7 @@ const router = createBrowserRouter([
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <Provider store={store}>
-      <ContextProvider >
-        <RouterProvider router={router} />
-      </ContextProvider>
+      <RouterProvider router={router} />
     </Provider>
   </React.StrictMode>
 );

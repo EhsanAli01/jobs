@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { useFormik } from 'formik';
 import axios from 'axios';
 import { z } from 'zod';
-import loader from '../assets/loader.gif';
+import loader from '../../../assets/loader.gif';
 import { twMerge } from 'tailwind-merge'
 
 const VerifyOtp = () => {
@@ -21,23 +21,25 @@ const VerifyOtp = () => {
         otp: z.number({ message: "OTP is required" }).min(4, "Invalid OTP")
     });
 
+    const validate = (values) => {
+        try {
+            userSchema.parse(values);
+        } catch (error) {
+            const fieldErrors = {};
+            error.errors.forEach(err => {
+                if (!fieldErrors[err.path[0]]) {
+                    fieldErrors[err.path[0]] = err.message;
+                }
+            });
+            return fieldErrors;
+        }
+    }
+
     const formik = useFormik({
         initialValues: {
             otp: '',
         },
-        validate: (values) => {
-            try {
-                userSchema.parse(values);
-            } catch (error) {
-                const fieldErrors = {};
-                error.errors.forEach(err => {
-                    if (!fieldErrors[err.path[0]]) {
-                        fieldErrors[err.path[0]] = err.message;
-                    }
-                });
-                return fieldErrors;
-            }
-        },
+        validate,
         onSubmit: (values) => {
             setloading(true);
             axios.post(`${baseUrl}auth/password-reset/otp-verification`, values)

@@ -42,7 +42,6 @@ const Contractor = () => {
         )
     }
 
-
     return (
         <>
             <Outlet />

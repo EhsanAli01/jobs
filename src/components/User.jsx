@@ -15,6 +15,7 @@ const User = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
 
+
     useEffect(() => {
 
         if (userType === 'contractor') {

@@ -3,7 +3,7 @@ import { FaLocationDot } from "react-icons/fa6";
 import { BsCalendar2DateFill } from "react-icons/bs";
 import { MdTimer } from "react-icons/md";
 import { useNavigate } from 'react-router-dom';
-import { formatTime, formatDate } from '../../script';
+import { formatTime, formatDate } from '../../../../script.js';
 
 const CardBox = ({ detail }) => {
     const navigate = useNavigate();
