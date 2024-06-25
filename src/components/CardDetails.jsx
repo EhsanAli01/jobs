@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { FaCalendarAlt } from "react-icons/fa";
 import { FaLocationDot } from "react-icons/fa6";
@@ -9,17 +9,20 @@ import { twMerge } from 'tailwind-merge';
 import { formatTime, formatDate } from '../../script';
 import loader from '../assets/lg.gif';
 import { useDispatch, useSelector } from 'react-redux';
-import { setCardData } from '../features/slices/jobSlice';
+import { setCardData, setJobRequests } from '../redux/slices/jobSlice';
+import { ReRender } from '../context/ContextProvider';
 
 const CardDetails = () => {
     const cardData = useSelector((state) => state.cardData.value);
+    const jobRequest = useSelector((state) => state.jobRequest.value);
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const { id } = useParams();
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+    const { render } = useContext(ReRender);
 
-    const baseUrl = 'http://localhost:3000/';
+    const baseUrl = import.meta.env.VITE_BASE_URL;
     const userType = localStorage.getItem('userType');
     const userId = localStorage.getItem('id');
     const email = localStorage.getItem('email');
@@ -30,13 +33,14 @@ const CardDetails = () => {
         axios.get(`${baseUrl}jobs/${userType}/${id}`, { headers: { "Authorization": `Bearer ${token}` } })
             .then(result => {
                 dispatch(setCardData(result.data.message));
+                dispatch(setJobRequests(result.data.message.jobRequest));
                 setLoading(false);
             })
             .catch(error => {
                 setError('Error fetching the job details');
                 setLoading(false);
             });
-    }, [dispatch, id, userType]);
+    }, [dispatch, id, userType, render]);
 
     if (loading) {
         return (
@@ -54,7 +58,7 @@ const CardDetails = () => {
         return null;
     }
 
-    const { jobTitle, category, description, location, date, startTime, endTime, jobRequest, user } = cardData;
+    const { jobTitle, category, description, location, date, startTime, endTime, user } = cardData;
 
     const images = cardData.images || [];
     const formattedDate = date && formatDate(date);

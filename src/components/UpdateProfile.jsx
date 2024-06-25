@@ -16,10 +16,11 @@ const UpdateProfile = () => {
     const [imageUrl, setImageUrl] = useState('');
     const [isLoading, setLoading] = useState(false);
     const [error, setError] = useState('');
-    const baseUrl = 'http://localhost:3000/';
+    const baseUrl = import.meta.env.VITE_BASE_URL;
     const navigate = useNavigate();
-    const userType = localStorage.getItem('userType');
     const { render, setRender } = useContext(ReRender);
+    const userType = localStorage.getItem('userType');
+
 
     // Schema and validation
     const profileUpdateSchema = z.object({
@@ -82,7 +83,7 @@ const UpdateProfile = () => {
                 .then(result => {
                     const userType = localStorage.getItem('userType');
                     setLoading(false);
-                    navigate(userType === 'user' ? `/user/profile` : `/contractor/profile`);
+                    navigate(`/${userType}/profile`);
                     setRender(render + 1);
                 })
                 .catch(error => {
@@ -115,7 +116,7 @@ const UpdateProfile = () => {
             <section className='py-10 flex justify-center items-center'>
                 <form onSubmit={formik.handleSubmit} className='rounded-xl border border-gray-500 w-96 bg-white flex justify-center items-center flex-col px-5 py-6 gap-3'>
                     <div className='w-full text-gray-800 text-2xl flex justify-end'>
-                        <ImCancelCircle onClick={() => navigate(`/${localStorage.getItem('userType')}/profile`)} className='cursor-pointer' />
+                        <ImCancelCircle onClick={() => navigate(`/${userType}/profile`)} className='cursor-pointer' />
                     </div>
                     <h1 className='font-bold tracking-wider text-xl'>Update Profile</h1>
                     <div className='border border-gray-500 w-full my-2'></div>

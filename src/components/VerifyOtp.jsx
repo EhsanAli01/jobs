@@ -13,7 +13,7 @@ const VerifyOtp = () => {
     const intervalRef = useRef(null);
     const [isloading, setloading] = useState(false);
     const [isError, setError] = useState('');
-    const baseUrl = 'http://localhost:3000/';
+    const baseUrl = import.meta.env.VITE_BASE_URL;
     const navigate = useNavigate();
 
     // Functions

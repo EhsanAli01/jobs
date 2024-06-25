@@ -9,10 +9,10 @@ const CardBox = ({ detail }) => {
     const navigate = useNavigate();
     const userType = localStorage.getItem('userType');
 
-    const { id, jobTitle, category, subCategory, description, location, images, date, startTime, endTime } = detail;
+    const { id, jobTitle, category, subCategory, description, location, images, date, startTime, endTime, jobRequest } = detail;
 
     const cardClickHandler = (id) => {
-        navigate(userType === 'user' ? `/user/card-details/${id}` : `/contractor/card-details/${id}`);
+        navigate(`/${userType}/card-details/${id}`);
     }
 
     const formattedDate = formatDate(date);
@@ -20,7 +20,12 @@ const CardBox = ({ detail }) => {
 
 
     return (
-        < div className='h-full cursor-pointer w-full border border-gray-300 shadow-lg rounded-lg px-7 py-4 flex flex-col gap-4 transition-all duration-300 hover:shadow-xl' onClick={() => cardClickHandler(id)}>
+        < div className='h-full cursor-pointer w-full border border-gray-300 shadow-lg rounded-lg px-7 py-4 flex flex-col gap-4 transition-all duration-300 hover:shadow-xl relative' onClick={() => cardClickHandler(id)}>
+            {userType === 'user' && jobRequest.length > 0 && (
+                <span className='border-2 border-red-800 bg-red-800 rounded-full w-6 h-6 text-sm absolute top-3 right-2 flex justify-center items-center text-white'>
+                    {jobRequest.length}
+                </span>
+            )}
             <div className='flex items-center gap-4'>
                 <div className='bg-slate-50 w-20 h-20 border border-gray-400 rounded-2xl overflow-hidden'>
                     <img src={`http://localhost:3000/` + images[0]} alt="Job Image" className='h-full w-full object-cover' />

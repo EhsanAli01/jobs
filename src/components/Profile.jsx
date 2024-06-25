@@ -6,7 +6,7 @@ import { ReRender } from '../context/ContextProvider';
 
 const Profile = () => {
     const [userData, setUserData] = useState({});
-    const baseUrl = 'http://localhost:3000/';
+    const baseUrl = import.meta.env.VITE_BASE_URL;
     const navigate = useNavigate();
     const userType = localStorage.getItem('userType');
     const { render } = useContext(ReRender);
@@ -86,7 +86,7 @@ const Profile = () => {
                     </section>
                 }
                 <div className='absolute bottom-[50px] right-[60px]'>
-                    <button type="button" className='transition-all duration-150 border-2 bg-purple-900 text-white px-4 py-2 rounded-full tracking-widest hover:bg-purple-950 flex justify-center items-center' onClick={() => navigate(userType === 'user' ? `/user/update` : `/contractor/update`)}>Edit Profile <CiEdit className='text-xl mx-1' /></button>
+                    <button type="button" className='transition-all duration-150 border-2 bg-purple-900 text-white px-4 py-2 rounded-full tracking-widest hover:bg-purple-950 flex justify-center items-center' onClick={() => navigate(`/${userType}/update`)}>Edit Profile <CiEdit className='text-xl mx-1' /></button>
                 </div>
 
             </div>

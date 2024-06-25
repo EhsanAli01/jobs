@@ -21,7 +21,7 @@ import ApplyJob from './components/ApplyJob.jsx';
 import Requests from './components/Requests.jsx';
 import { ContextProvider } from './context/ContextProvider.jsx';
 import { Provider } from 'react-redux';
-import store from './features/store.js';
+import store from './redux/store.js';
 
 const router = createBrowserRouter([
   { path: '/login', element: <Login /> },

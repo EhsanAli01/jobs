@@ -10,7 +10,7 @@ const Navbar = () => {
     const [userData, setUserData] = useState({});
     const ref = useRef(null);
     const [isOpen, setIsOpen] = useState(false);
-    const baseUrl = 'http://localhost:3000/';
+    const baseUrl = import.meta.env.VITE_BASE_URL;
     const navigate = useNavigate();
     const userId = localStorage.getItem('id');
     const { render } = useContext(ReRender);

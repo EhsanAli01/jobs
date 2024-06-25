@@ -13,7 +13,7 @@ const ApplyJob = () => {
     const [cardData, setCardData] = useState(null);
     const navigate = useNavigate();
     const { id } = useParams();
-    const baseUrl = 'http://localhost:3000/';
+    const baseUrl = import.meta.env.VITE_BASE_URL;
     const userType = localStorage.getItem('userType');
     const userId = localStorage.getItem('id');
 

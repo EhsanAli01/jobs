@@ -14,7 +14,7 @@ const CreateJob = () => {
     const [error, setError] = useState('');
     const fileUploadRef = useRef(null);
     const navigate = useNavigate();
-    const baseUrl = 'http://localhost:3000/';
+    const baseUrl = import.meta.env.VITE_BASE_URL;
     const { id } = useParams();
 
     const jobSchema = z.object({

@@ -10,7 +10,8 @@ const Signup = () => {
     const [isUser, setUser] = useState(true);
     const [error, setError] = useState('');
     const navigate = useNavigate();
-    const baseUrl = 'http://localhost:3000/';
+    const baseUrl = import.meta.env.VITE_BASE_URL;
+    const userType = localStorage.getItem('userType');
 
     const userSchema = z.object({
         userType: z.string().min(1, 'User-Type is required'),
@@ -78,7 +79,7 @@ const Signup = () => {
     useEffect(() => {
         const token = localStorage.getItem('token');
         if (token) {
-            navigate(`${localStorage.getItem('userType')}`);
+            navigate(`${userType}`);
         }
         else {
             localStorage.clear();

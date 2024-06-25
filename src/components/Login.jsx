@@ -10,7 +10,7 @@ const Login = () => {
     const [isloading, setloading] = useState(false);
     const [error, setError] = useState('');
     const navigate = useNavigate();
-    const baseUrl = 'http://localhost:3000/';
+    const baseUrl = import.meta.env.VITE_BASE_URL;
 
     const userSchema = z.object({
         email: z.string().min(1, "Email is required").email(),
@@ -58,7 +58,7 @@ const Login = () => {
                 })
                 .catch(error => {
                     console.log(error);
-                    setError(error.response.data.message || error.message);
+                    // setError(error.response.data.message || error.message);
                     setloading(false);
                 });
         }
