@@ -3,27 +3,25 @@ import { createSlice } from "@reduxjs/toolkit";
 const jobSlice = createSlice({
   name: "jobsData",
   initialState: {
-    jobs: [],
+    jobsArray: [],
     cardData: {},
     jobRequest: [],
   },
   reducers: {
     setJobsArray: (state, action) => {
-      state.value = action.payload;
+      state.jobsArray = action.payload;
     },
 
     setCardData: (state, action) => {
-      state.value = action.payload;
+      state.cardData = action.payload;
     },
 
     setJobRequests: (state, action) => {
-      state.value = action.payload;
+      state.jobRequest = action.payload;
     },
   },
 });
 
-export const { setJobsArray } = jobSlice.actions;
-export const { setCardData } = jobSlice.actions;
-export const { setJobRequests } = jobSlice.actions;
+export const { setJobsArray, setCardData, setJobRequests } = jobSlice.actions;
 
 export const jobsReducer = jobSlice.reducer;

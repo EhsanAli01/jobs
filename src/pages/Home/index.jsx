@@ -13,7 +13,7 @@ const HomeBody = () => {
   const [allJobs, setJobs] = useState(true);
   const userType = localStorage.getItem("userType");
   const email = localStorage.getItem("email");
-  const jobsArray = useSelector((state) => state.jobs.value);
+  const jobsArray = useSelector((state) => state.jobs.jobsArray);
   const totalPages = Math.ceil(filteredJobs.length / 6);
 
   // Functions

@@ -12,7 +12,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { setCardData, setJobRequests } from "../../../redux/slices/jobSlice";
 
 const CardDetails = () => {
-  const cardData = useSelector((state) => state.cardData.value);
+  const cardData = useSelector((state) => state);
   const jobRequest = useSelector((state) => state.jobRequest.value);
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -20,6 +20,8 @@ const CardDetails = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const render = useSelector((state) => state.render.value);
+
+  console.log(cardData);
 
   const baseUrl = import.meta.env.VITE_BASE_URL;
   const userType = localStorage.getItem("userType");
