@@ -1,0 +1,8 @@
+[
+    { "value": "Developer", "label": "Developer" },
+    { "value": "Lawyer", "label": "Lawyer" },
+    { "value": "Arts", "label": "Arts" },
+    { "value": "Sales", "label": "Sales" },
+    { "value": "Engineer", "label": "Engineer" },
+    { "value": "Coordinator", "label": "Coordinator" }
+]
