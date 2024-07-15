@@ -5,14 +5,14 @@ import { useFormik } from "formik";
 import { z } from "zod";
 import FormInput from "../../components/FormInput";
 import Button from "../../components/Button";
+import { dataHandler } from "../../../Util";
 
 const Signup = () => {
+  const { baseUrl, userType, token } = dataHandler();
   const [isLoading, setLoading] = useState(false);
   const [isUser, setUser] = useState(true);
   const [error, setError] = useState("");
   const navigate = useNavigate();
-  const baseUrl = import.meta.env.VITE_BASE_URL;
-  const userType = localStorage.getItem("userType");
 
   const userSchema = z.object({
     userType: z.string().min(1, "User-Type is required"),
@@ -68,18 +68,13 @@ const Signup = () => {
       axios
         .post(`${baseUrl}auth/signup`, values)
         .then((result) => {
-          const { id, userType, userName, email, description, image } =
-            result.data.message;
+          const userData = result.data.userData;
           const token = result.data.token;
+          const data = JSON.stringify(userData);
           localStorage.setItem("token", token);
-          localStorage.setItem("id", id);
-          localStorage.setItem("userType", userType);
-          localStorage.setItem("userName", userName);
-          localStorage.setItem("email", email);
-          localStorage.setItem("description", description);
-          localStorage.setItem("image", image);
+          localStorage.setItem("dat_xyz", data);
           setLoading(false);
-          navigate("/");
+          navigate("/");a
         })
         .catch((error) => {
           console.log(error.response.data.message);
@@ -94,13 +89,12 @@ const Signup = () => {
   });
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
     if (token) {
       navigate(`${userType}`);
     } else {
       localStorage.clear();
     }
-  }, []);
+  }, [token]);
 
   const typeClickHandler = (type = "user") => {
     type = type || "user";
@@ -171,6 +165,7 @@ const Signup = () => {
           type="submit"
           label="Sign Up"
           color="primary"
+          sty="w-full"
           loading={isLoading}
         />
 

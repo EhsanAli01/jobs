@@ -4,23 +4,22 @@ import { BsCalendar2DateFill } from "react-icons/bs";
 import { MdTimer } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 import { formatTime, formatDate } from "../../../../script.js";
+import { dataHandler } from "../../../../Util/index.jsx";
+import clsx from "clsx";
 
 const CardBox = ({ detail }) => {
+  const { userType, email } = dataHandler();
   const navigate = useNavigate();
-  const userType = localStorage.getItem("userType");
-  const email = localStorage.getItem("email");
 
   const {
     id,
     jobTitle,
     category,
-    subCategory,
     description,
     location,
     images,
     date,
     startTime,
-    endTime,
     jobRequest,
   } = detail;
 
@@ -43,6 +42,32 @@ const CardBox = ({ detail }) => {
         </span>
       )}
 
+      {userType === "user" &&
+        jobRequest.length > 0 &&
+        jobRequest.map((obj) => {
+          if (obj.status === "Accepted") {
+            return (
+              <span
+                key={obj.id}
+                className={`border-2 rounded-lg px-2 py-1 text-md absolute top-3 right-3 flex justify-center items-center text-white bg-purple-600 border-purple-600`}
+              >
+                Hired
+              </span>
+            );
+          }
+
+          if (obj.status === "Completed") {
+            return (
+              <span
+                key={obj.id}
+                className={`border-2 rounded-lg px-2 py-1 text-md absolute top-3 right-3 flex justify-center items-center text-white bg-green-600 border-green-600`}
+              >
+                Completed
+              </span>
+            );
+          }
+        })}
+
       {userType === "contractor" &&
         jobRequest.length > 0 &&
         jobRequest.map(
@@ -50,11 +75,20 @@ const CardBox = ({ detail }) => {
             obj.user.email === email && (
               <span
                 key={obj.id}
-                className={`border-2 rounded-lg px-2 py-1 text-md absolute top-3 right-3 flex justify-center items-center text-white ${
-                  obj.status === "Accepted"
-                    ? "bg-green-600 border-green-600"
-                    : "bg-blue-600 border-blue-600"
-                }`}
+                className={clsx(
+                  "border-2 rounded-lg px-2 py-1 text-md absolute top-3 right-3 flex justify-center items-center text-white",
+                  {
+                    "bg-blue-600 border-blue-600": obj.status === "Applied",
+                    "bg-green-600 border-green-600": [
+                      "Accepted",
+                      "Completed",
+                    ].includes(obj.status),
+                    "bg-red-600 border-red-600": [
+                      "Declined",
+                      "Canceled",
+                    ].includes(obj.status),
+                  }
+                )}
               >
                 {obj.status}
               </span>

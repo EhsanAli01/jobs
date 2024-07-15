@@ -3,19 +3,17 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useFormik } from "formik";
 import { z } from "zod";
-import { twMerge } from "tailwind-merge";
 import FormInput from "../../../components/FormInput";
 import Button from "../../../components/Button";
+import { dataHandler } from "../../../../Util";
 
 const ApplyJob = () => {
+  const { baseUrl, userType, id, token } = dataHandler();
   const [isloading, setloading] = useState(false);
   const [error, setError] = useState("");
   const [cardData, setCardData] = useState(null);
   const navigate = useNavigate();
-  const { id } = useParams();
-  const baseUrl = import.meta.env.VITE_BASE_URL;
-  const userType = localStorage.getItem("userType");
-  const userId = localStorage.getItem("id");
+  const { cardId } = useParams();
 
   const applicationSchema = z.object({
     expectedSalary: z.number().min(1, "Expected Salary is required"),
@@ -37,7 +35,6 @@ const ApplyJob = () => {
         applicationSchema.parse(values);
         return {};
       } catch (error) {
-        console.log(error);
         if (error instanceof z.ZodError) {
           const fieldErrors = {};
           error.errors.forEach((err) => {
@@ -52,18 +49,16 @@ const ApplyJob = () => {
     },
     onSubmit: (values) => {
       setloading(true);
-      const userId = localStorage.getItem("id");
-      const token = localStorage.getItem("token");
       axios
         .post(
-          `${baseUrl}jobs/contractor/request?userId=${userId}&jobId=${id}`,
+          `${baseUrl}jobs/contractor/request/?userId=${id}&jobId=${cardId}`,
           values,
           { headers: { Authorization: `Bearer ${token}` } }
         )
         .then((result) => {
           console.log(result);
           setloading(false);
-          navigate(`/contractor/card-details/${id}`);
+          navigate(`/contractor/card-details/${cardId}`);
         })
         .catch((error) => {
           console.log(error);
@@ -75,9 +70,8 @@ const ApplyJob = () => {
 
   // UseEffects
   useEffect(() => {
-    const token = localStorage.getItem("token");
     axios
-      .get(`${baseUrl}jobs/${userType}/${id}`, {
+      .get(`${baseUrl}jobs/${userType}/get-by-id/${cardId}`, {
         headers: { Authorization: `Bearer ${token}` },
       })
       .then((result) => {
@@ -91,19 +85,10 @@ const ApplyJob = () => {
   useEffect(() => {
     if (
       cardData?.jobRequest?.length > 0 &&
-      cardData?.jobRequest?.some((obj) => obj.userId === userId)
+      cardData?.jobRequest?.some((obj) => obj.userId === id)
     )
-      navigate(`/contractor/card-details/${id}`);
+      navigate(`/contractor/card-details/${cardId}`);
   }, [cardData]);
-
-  // Tailwind Merge
-  const button = twMerge(
-    "w-32 py-1 rounded-lg text-white font-semibold transition-all duration-200 flex justify-center items-center h-10"
-  );
-  const buttonPrimary = twMerge(
-    button,
-    "border border-blue-900 bg-blue-900 hover:bg-blue-950 hover:border-blue-950"
-  );
 
   // Options
   const typeOptions = [
@@ -150,6 +135,7 @@ const ApplyJob = () => {
           label="Submit"
           color="primary"
           type="submit"
+          sty="w-full"
           loading={isloading}
         />
 

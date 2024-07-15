@@ -7,12 +7,13 @@ import Alert from "@mui/material/Alert";
 import CheckIcon from "@mui/icons-material/Check";
 import FormInput from "../../../components/FormInput";
 import Button from "../../../components/Button.jsx";
+import { dataHandler } from "../../../../Util/index.jsx";
 
 const ChangePassword = () => {
   // States and Variables
+  const { baseUrl } = dataHandler();
   const [isloading, setloading] = useState(false);
   const [isError, setError] = useState("");
-  const baseUrl = import.meta.env.VITE_BASE_URL;
   const [change, setChange] = useState(false);
   const navigate = useNavigate();
 
@@ -143,6 +144,7 @@ const ChangePassword = () => {
           type="submit"
           color="success"
           label="Submit"
+          sty="w-full"
           loading={isloading}
         />
       ) : (

@@ -3,26 +3,26 @@ import Button from "../../../components/Button";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { reRender } from "../../../redux/slices/renderSlice";
-import Alert from "@mui/material/Alert";
-import Stack from "@mui/material/Stack";
 import Alerts from "../../../components/Alerts";
+import { dataHandler } from "../../../../Util";
+import { useNavigate } from "react-router-dom";
 
-const RequestCard = ({ obj }) => {
+const RequestCard = ({ obj, cardId }) => {
+  const { id, baseUrl, token, userType } = dataHandler();
   const [error, setError] = useState(null);
   const [loadingDeclineBtn, setLoadingDeclineBtn] = useState(false);
   const [loadingAcceptBtn, setLoadingAcceptBtn] = useState(false);
-  const token = localStorage.getItem("token");
-  const baseUrl = import.meta.env.VITE_BASE_URL;
   const [message, setMessage] = useState("");
   const render = useSelector((state) => state.render.value);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
-  const acceptRequest = (requestId) => {
+  const acceptRequest = (requestId, jobId, receiverId) => {
     setLoadingAcceptBtn(true);
     axios
       .patch(
-        `${baseUrl}jobs/user/accept/${requestId}`,
-        { status: "accepted" },
+        `${baseUrl}jobs/user/accept/?reqId=${requestId}&jobId=${jobId}&senderId=${id}&receiverId=${receiverId}`,
+        { status: "Accepted" },
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -33,6 +33,7 @@ const RequestCard = ({ obj }) => {
         setTimeout(() => {
           setMessage("");
           dispatch(reRender(render + 1));
+          navigate(`/${userType}/card-details/${cardId}`);
         }, 1000);
       })
       .catch((error) => {
@@ -42,18 +43,22 @@ const RequestCard = ({ obj }) => {
       });
   };
 
-  const declineRequest = (requestId) => {
+  const declineRequest = (requestId, jobId, receiverId) => {
     setLoadingDeclineBtn(true);
     axios
-      .delete(`${baseUrl}jobs/user/delete/${requestId}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
+      .delete(
+        `${baseUrl}jobs/user/decline/?reqId=${requestId}&jobId=${jobId}&senderId=${id}&receiverId=${receiverId}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      )
       .then((result) => {
         setLoadingDeclineBtn(false);
         setMessage("Request declined");
         setTimeout(() => {
           setMessage("");
           dispatch(reRender(render + 1));
+          navigate(`/${userType}/card-details/${cardId}`);
         }, 1000);
       })
       .catch((error) => {
@@ -139,7 +144,7 @@ const RequestCard = ({ obj }) => {
               label="Accept"
               color="success"
               sty="px-3 rounded-full"
-              click={() => acceptRequest(obj.id)}
+              click={() => acceptRequest(obj.id, obj.jobId, obj.user.id)}
               loading={loadingAcceptBtn}
             />
 
@@ -148,7 +153,7 @@ const RequestCard = ({ obj }) => {
               label="Decline"
               color="danger"
               sty="px-3 rounded-full"
-              click={() => declineRequest(obj.id)}
+              click={() => declineRequest(obj.id, obj.jobId, obj.user.id)}
               loading={loadingDeclineBtn}
             />
           </div>

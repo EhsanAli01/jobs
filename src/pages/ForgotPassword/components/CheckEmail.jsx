@@ -5,11 +5,13 @@ import axios from "axios";
 import { z } from "zod";
 import FormInput from "../../../components/FormInput";
 import Button from "../../../components/Button.jsx";
+import { dataHandler } from "../../../../Util";
 
 const CheckEmail = () => {
   // States and Variables
+  const { baseUrl, email } = dataHandler();
   const [isError, setError] = useState("");
-  const baseUrl = import.meta.env.VITE_BASE_URL;
+  const [isloading, setloading] = useState(false);
   const navigate = useNavigate();
 
   // Functions
@@ -61,15 +63,8 @@ const CheckEmail = () => {
     },
   });
 
-  const handleEmailChange = (e) => {
-    const email = e.target.value;
-    formik.setFieldValue("email", email);
-    localStorage.setItem("email", email);
-  };
-
   // UseEffects
   useEffect(() => {
-    const email = localStorage.getItem("email");
     formik.setFieldValue("email", email);
   }, []);
 
@@ -85,7 +80,13 @@ const CheckEmail = () => {
         placeholder="Enter Email"
         formik={formik}
       />
-      <Button type="submit" label="Next" color="primary" />
+      <Button
+        type="submit"
+        label="Next"
+        color="primary"
+        sty="w-full"
+        loading={isloading}
+      />
 
       {isError && (
         <span className="font-semibold text-sm text-red-700 flex justify-center items-center">

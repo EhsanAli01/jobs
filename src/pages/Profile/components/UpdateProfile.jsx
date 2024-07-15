@@ -11,16 +11,16 @@ import { useDispatch } from "react-redux";
 import Button from "../../../components/Button";
 import FormInput from "../../../components/FormInput";
 import FormikError from "../../../components/FormikError";
+import { dataHandler } from "../../../../Util";
 
 const UpdateProfile = () => {
   // States and Variables
+  const { baseUrl, userType, token } = dataHandler();
   const [imageUrl, setImageUrl] = useState("");
   const [isLoading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const baseUrl = import.meta.env.VITE_BASE_URL;
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const userType = localStorage.getItem("userType");
 
   // Schema and validation
   const profileUpdateSchema = z.object({
@@ -85,13 +85,11 @@ const UpdateProfile = () => {
         });
       description && form.append("description", description);
 
-      const token = localStorage.getItem("token");
       axios
         .patch(`${baseUrl}user/update`, form, {
           headers: { Authorization: `Bearer ${token}` },
         })
         .then((result) => {
-          const userType = localStorage.getItem("userType");
           setLoading(false);
           navigate(`/${userType}/profile`);
           dispatch(reRender());
@@ -215,6 +213,7 @@ const UpdateProfile = () => {
             type="submit"
             label="Update"
             color="secondary"
+            sty="w-full"
             loading={isLoading}
           />
 

@@ -10,14 +10,15 @@ import Button from "../../components/Button";
 import FormikError from "../../components/FormikError.jsx";
 import categoryOptions from "../../assets/categoryOptions.json";
 import subCategoryOptions from "../../assets/subCategoryOptions.json";
+import { dataHandler } from "../../../Util/index.jsx";
 
 const CreateJob = () => {
+  const { baseUrl, token, userType } = dataHandler();
   const [isloading, setloading] = useState(false);
   const [imageTempUrls, changeTempUrls] = useState([]);
   const [error, setError] = useState("");
   const fileUploadRef = useRef(null);
   const navigate = useNavigate();
-  const baseUrl = import.meta.env.VITE_BASE_URL;
   const { id } = useParams();
 
   const jobSchema = z.object({
@@ -59,10 +60,18 @@ const CreateJob = () => {
     validate: (values) => {
       try {
         jobSchema.parse(values);
+        return {};
       } catch (error) {
         if (error instanceof z.ZodError) {
-          return error.formErrors.fieldErrors;
+          const fieldErrors = {};
+          error.errors.forEach((err) => {
+            if (!fieldErrors[err.path[0]]) {
+              fieldErrors[err.path[0]] = err.message;
+            }
+          });
+          return fieldErrors;
         }
+        return {};
       }
     },
     onSubmit: (values) => {
@@ -82,15 +91,11 @@ const CreateJob = () => {
         form.append("images", image);
       });
 
-      const token = localStorage.getItem("token");
       axios
-        .post(
-          `${baseUrl}jobs/${localStorage.getItem("userType")}/${id}`,
-          form,
-          { headers: { Authorization: `Bearer ${token}` } }
-        )
+        .post(`${baseUrl}jobs/${userType}/create/${id}`, form, {
+          headers: { Authorization: `Bearer ${token}` },
+        })
         .then((result) => {
-          console.log(result);
           setloading(false);
           navigate("/");
         })
@@ -115,13 +120,6 @@ const CreateJob = () => {
     };
   }, [imageTempUrls]);
 
-  useEffect(() => {
-    const userType = localStorage.getItem("userType");
-    if (userType !== "user") {
-      return navigate("/");
-    }
-  }, []);
-
   const imageCancelHandler = (url, index) => {
     const updatedImageTempUrls = imageTempUrls.filter(
       (image, i) => i !== index
@@ -144,7 +142,7 @@ const CreateJob = () => {
     <section className="py-10 flex justify-center items-center">
       <form
         onSubmit={formik.handleSubmit}
-        className="rounded-sm border border-gray-500 min-w-96 flex justify-center items-center flex-col px-5 py-6 gap-3"
+        className="rounded-sm border border-gray-500 w-[455px] flex justify-center items-center flex-col px-5 py-6 gap-3"
       >
         <h1 className="pb-1 font-bold text-xl">Create Job</h1>
         <div className="border border-gray-500 w-full my-2"></div>
@@ -256,6 +254,7 @@ const CreateJob = () => {
           type="submit"
           label="Create Job"
           color="primary"
+          sty="w-full"
           loading={isloading}
         />
 

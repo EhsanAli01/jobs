@@ -8,6 +8,8 @@
 @layer base {
   html {
     font-family: "Ubuntu Sans", sans-serif;
+    /* background-color: rgb(40, 41, 44);
+    color: white; */
     /* overflow-x: hidden; */
   }
 }
@@ -40,6 +42,7 @@ a.active {
 }
 
 .blr {
+  /* background-color: rgba(48, 46, 46, 0.6) !important; */
   background-color: rgba(255, 255, 255, 0.6) !important;
   backdrop-filter: blur(30px) !important;
 }

@@ -1,30 +1,30 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 import { IoMdArrowRoundBack } from "react-icons/io";
 import { useDispatch, useSelector } from "react-redux";
-import { setJobRequests } from "../../../redux/slices/jobSlice";
-import Alerts from "../../../components/Alerts.jsx";
+import { setJobRequests } from "../../../redux/slices/jobSlice.js";
 import RequestCard from "./RequestCard.jsx";
+import { dataHandler } from "../../../../Util/index.jsx";
+import loader from "../../../assets/lg.gif";
 
 const Requests = () => {
-  const baseUrl = import.meta.env.VITE_BASE_URL;
-  const userType = localStorage.getItem("userType");
-  const { id } = useParams();
+  const { baseUrl, userType, token } = dataHandler();
+  const { cardId } = useParams();
   const navigate = useNavigate();
-
+  const [isloading, setLoading] = useState(false);
   const render = useSelector((state) => state.render.value);
-  const requests = useSelector((state) => state.jobRequest.value);
+  const requests = useSelector((state) => state.jobs.jobRequest);
   const dispatch = useDispatch();
 
   const backButtonHandler = () => {
-    navigate(`/${userType}/card-details/${id}`);
+    navigate(`/${userType}/card-details/${cardId}`);
   };
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
+    setLoading(true);
     axios
-      .get(`${baseUrl}jobs/${userType}/${id}`, {
+      .get(`${baseUrl}jobs/${userType}/get-by-id/${cardId}`, {
         headers: { Authorization: `Bearer ${token}` },
       })
       .then((result) => {
@@ -32,11 +32,21 @@ const Requests = () => {
           (request) => request.status === "Applied"
         );
         dispatch(setJobRequests(filteredRequests));
+        setLoading(false);
       })
       .catch((error) => {
-        setError("Error fetching the job details");
+        setLoading(false);
+        console.log(error);
       });
-  }, [dispatch, render, userType, id]);
+  }, [dispatch, render, userType, cardId]);
+
+  if (isloading) {
+    return (
+      <div className="flex justify-center items-center h-[500px]">
+        <img src={loader} alt="" />;
+      </div>
+    );
+  }
 
   if (requests.length === 0) {
     return (
@@ -57,14 +67,14 @@ const Requests = () => {
   return (
     <section>
       <div
-        className="border border-gray-400 text-4xl rounded-full transition-all duration-150 cursor-pointer p-1 bg-slate-100 hover:shadow-xl hover:bg-slate-200 mx-24 my-6 w-12 h-12 flex justify-center items-center"
+        className="border border-gray-400 text-3xl rounded-full transition-all duration-150 cursor-pointer p-1 bg-slate-100 hover:shadow-xl hover:bg-slate-200 mx-24 my-6 w-10 h-10 flex justify-center items-center"
         onClick={backButtonHandler}
       >
         <IoMdArrowRoundBack />
       </div>
 
       {requests.map((obj) => (
-        <RequestCard key={obj.id} obj={obj} />
+        <RequestCard key={obj.id} obj={obj} cardId={cardId} />
       ))}
     </section>
   );

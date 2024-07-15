@@ -94,7 +94,7 @@ const FormInput = ({
         <textarea
           id={id}
           name={name}
-          className={`${commonInputClasses} h-24 px-3 ${sty}`}
+          className={`${commonInputClasses} min-h-24 px-3 ${sty}`}
           placeholder={placeholder}
           onChange={formik.handleChange}
           onBlur={formik.handleBlur}

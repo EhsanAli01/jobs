@@ -4,15 +4,17 @@ import { useFormik } from "formik";
 import axios from "axios";
 import { z } from "zod";
 import FormikError from "../../../components/FormikError";
-import Button from '../../../components/Button.jsx';
+import Button from "../../../components/Button.jsx";
+import { dataHandler } from "../../../../Util/index.jsx";
 
 const VerifyOtp = () => {
   // States and variables
+  const { baseUrl } = dataHandler();
+  const [isloading, setloading] = useState(false);
   const [timeLeft, setTimeLeft] = useState(30);
   const [obtained, setObtained] = useState(false);
   const intervalRef = useRef(null);
   const [isError, setError] = useState("");
-  const baseUrl = import.meta.env.VITE_BASE_URL;
   const navigate = useNavigate();
 
   // Functions
@@ -124,10 +126,15 @@ const VerifyOtp = () => {
           </button>
         )}
       </div>
-      
-      <FormikError formik={formik} name='otp' />
-      <Button type='submit' color='primary' label='Next' />
 
+      <FormikError formik={formik} name="otp" />
+      <Button
+        type="submit"
+        color="primary"
+        label="Next"
+        sty="w-full"
+        loading={isloading}
+      />
 
       {isError && (
         <span className="font-semibold text-sm text-red-700 flex justify-center items-center">

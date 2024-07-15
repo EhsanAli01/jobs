@@ -5,12 +5,13 @@ import { useFormik } from "formik";
 import { z } from "zod";
 import FormInput from "../../components/FormInput";
 import Button from "../../components/Button";
+import { dataHandler } from "../../../Util";
 
 const Login = () => {
+  const { baseUrl, token } = dataHandler();
   const [isloading, setloading] = useState(false);
   const [error, setError] = useState("");
   const navigate = useNavigate();
-  const baseUrl = import.meta.env.VITE_BASE_URL;
 
   const userSchema = z.object({
     email: z.string().min(1, "Email is required").email(),
@@ -46,17 +47,12 @@ const Login = () => {
       axios
         .post(`${baseUrl}auth/login`, values)
         .then((result) => {
-          const { id, userType, userName, email, description, image } =
-            result.data.message.result;
-          setloading(false);
+          const userData = result.data.message.userData;
           const token = result.data.message.token;
+          const data = JSON.stringify(userData);
+          localStorage.setItem("dat_xyz", data);
           localStorage.setItem("token", token);
-          localStorage.setItem("id", id);
-          localStorage.setItem("userType", userType);
-          localStorage.setItem("userName", userName);
-          localStorage.setItem("email", email);
-          localStorage.setItem("description", description);
-          localStorage.setItem("image", image);
+          setloading(false);
           navigate("/");
         })
         .catch((error) => {
@@ -69,7 +65,6 @@ const Login = () => {
 
   // UseEffects
   useEffect(() => {
-    const token = localStorage.getItem("token");
     if (token) {
       navigate("/");
     } else {
@@ -112,6 +107,7 @@ const Login = () => {
           type="submit"
           label="Login"
           color="success"
+          sty="w-full"
           loading={isloading}
         />
 

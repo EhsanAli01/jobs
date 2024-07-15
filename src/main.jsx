@@ -17,19 +17,23 @@ import CheckEmail from "./pages/ForgotPassword/components/CheckEmail.jsx";
 import VerifyOtp from "./pages/ForgotPassword/components/VerifyOtp.jsx";
 import ChangePassword from "./pages/ForgotPassword/components/ChangePassword.jsx";
 
-import User from "./components/User.jsx";
-import Contractor from "./components/Contractor.jsx";
+import User from "./pages/Home/User";
+import Contractor from "./pages/Home/Contractor";
 
-import DisplayJobs from "./pages/Home";
 import CardDetails from "./pages/Home/components/CardDetails.jsx";
-import Requests from "./pages/Home/components/Requests.jsx";
-import ApplyJob from "./pages/Home/components/ApplyJob.jsx";
+import Requests from "./pages/Home/User/Requests.jsx";
+import ApplyJob from "./pages/Home/Contractor/ApplyJob.jsx";
 
 import CreateJob from "./pages/CreateJob";
-import Apply from "./pages/Apply";
+import Contacts from "./pages/contacts/index.jsx";
 
 import Profile from "./pages/Profile";
 import UpdateProfile from "./pages/Profile/components/UpdateProfile.jsx";
+import Hired from "./pages/Home/User/Hired.jsx";
+import Home from "./pages/Home";
+import UserDashboard from "./pages/Home/User/UserDashboard.jsx";
+import ContractorDashboard from "./pages/Home/Contractor/ContractorDashboard.jsx";
+import Notifications from "./pages/notifications";
 
 const router = createBrowserRouter([
   { path: "/login", element: <Login /> },
@@ -48,19 +52,21 @@ const router = createBrowserRouter([
     path: "/",
     element: <App />,
     children: [
-      { path: "", element: <Navigate to="user" replace /> },
+      { path: "", element: <Home /> },
       {
         path: "/user",
         element: <User />,
         children: [
           { path: "", element: <Navigate to="home" replace /> },
-          { path: "home", element: <DisplayJobs /> },
+          { path: "home", element: <UserDashboard /> },
           { path: "createjob/:id", element: <CreateJob /> },
-          { path: "apply", element: <Apply /> },
-          { path: "card-details/:id", element: <CardDetails /> },
-          { path: "requests/:id", element: <Requests /> },
+          { path: "card-details/:cardId", element: <CardDetails /> },
+          { path: "requests/:cardId", element: <Requests /> },
+          { path: "hired/:cardId", element: <Hired /> },
           { path: "profile", element: <Profile /> },
           { path: "update", element: <UpdateProfile /> },
+          { path: "contacts", element: <Contacts /> },
+          { path: "notifications/:id", element: <Notifications /> },
         ],
       },
       {
@@ -68,12 +74,13 @@ const router = createBrowserRouter([
         element: <Contractor />,
         children: [
           { path: "", element: <Navigate to="home" replace /> },
-          { path: "home", element: <DisplayJobs /> },
-          { path: "apply", element: <Apply /> },
-          { path: "card-details/:id", element: <CardDetails /> },
-          { path: "apply-job/:id", element: <ApplyJob /> },
+          { path: "home", element: <ContractorDashboard /> },
+          { path: "card-details/:cardId", element: <CardDetails /> },
+          { path: "apply-job/:cardId", element: <ApplyJob /> },
           { path: "profile", element: <Profile /> },
           { path: "update", element: <UpdateProfile /> },
+          { path: "contacts", element: <Contacts /> },
+          { path: "notifications/:id", element: <Notifications /> },
         ],
       },
     ],
