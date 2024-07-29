@@ -29,11 +29,11 @@ const ProfileMenu = ({ userData, handleClose, handleDeleterOpen }) => {
 
       {userType === "contractor" && (
         <Link
-          to={`contractor/chart`}
+          to={`contractor/career`}
           className={commonClasses}
           onClick={handleClose}
         >
-          Chart
+          Career
         </Link>
       )}
 

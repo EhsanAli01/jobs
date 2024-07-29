@@ -42,7 +42,7 @@ import Notifications from "./screens/notifications";
 import Page404 from "./screens/page-404";
 import Review from "./screens/reviews";
 import PrivacyPolicy from "./components/PrivacyPolicy.jsx";
-import Chart from "./screens/chart/index.jsx";
+import Career from "./screens/career";
 
 const router = createBrowserRouter([
   { path: "/login", element: <Login /> },
@@ -100,7 +100,7 @@ const router = createBrowserRouter([
           { path: "notifications/:id", element: <Notifications /> },
           { path: "reviews", element: <Review /> },
           { path: "privacy-policy", element: <PrivacyPolicy /> },
-          { path: "chart", element: <Chart /> },
+          { path: "career", element: <Career /> },
         ],
       },
     ],
