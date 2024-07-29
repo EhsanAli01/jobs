@@ -7,6 +7,7 @@ const jobSlice = createSlice({
     cardData: {},
     jobRequest: [],
     notifications: [],
+    reviews: [],
   },
   reducers: {
     setJobsArray: (state, action) => {
@@ -24,10 +25,19 @@ const jobSlice = createSlice({
     setNotifications: (state, action) => {
       state.notifications = action.payload;
     },
+
+    setReviews: (state, action) => {
+      state.reviews = action.payload;
+    },
   },
 });
 
-export const { setJobsArray, setCardData, setJobRequests, setNotifications } =
-  jobSlice.actions;
+export const {
+  setJobsArray,
+  setCardData,
+  setJobRequests,
+  setNotifications,
+  setReviews,
+} = jobSlice.actions;
 
 export const jobsReducer = jobSlice.reducer;

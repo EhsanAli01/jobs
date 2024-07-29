@@ -1,29 +1,35 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { IoNotifications } from "react-icons/io5";
-import { Link, NavLink, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
-import { dataHandler } from "../../Util";
+import { dataHandler } from "../util/loginData.js";
 import { RiArrowDropDownLine, RiMoonClearFill } from "react-icons/ri";
 import { IoIosSunny } from "react-icons/io";
-import { reRender } from "../redux/slices/renderSlice";
+import { reRender } from "../redux/slices/renderSlice.js";
+import ProfileImage from "./ProfileImage.jsx";
+import Menu from "@mui/material/Menu";
+import NavLinkComp from "./NavLinkComp.jsx";
+import ProfileMenu from "./ProfileMenu.jsx";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
+import Button from "./Button";
+import { toast } from "react-toastify";
 
 const Navbar = () => {
   const { token, id, userType, baseUrl } = dataHandler();
   const [userData, setUserData] = useState({});
-  const [isOpen, setIsOpen] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [deleter, setDeleter] = useState(false);
+  const open = Boolean(anchorEl);
   const [notificationsArray, setNotificationsArray] = useState([]);
   const render = useSelector((state) => state.render.value);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const ref = useRef(null);
-
-  const handleClickOutside = (event) => {
-    if (ref.current && !ref.current.contains(event.target)) {
-      setIsOpen(false);
-    }
-  };
 
   const fetchData = () => {
     axios
@@ -56,92 +62,101 @@ const Navbar = () => {
       });
   };
 
-  const markSeen = () => {
-    axios
-      .patch(
+  const markSeen = async () => {
+    try {
+      const response = await axios.patch(
         `${baseUrl}jobs/${userType}/notifications/mark-seen`,
         { notificationsArray },
         {
           headers: { Authorization: `Bearer ${token}` },
         }
-      )
-      .then((result) => {
-        fetchNotifications();
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+      );
+
+      if (response) {
+        dispatch(reRender(render + 1));
+        navigate(`/${userType}/notifications/${id}`);
+      }
+    } catch (error) {
+      console.log("error", error);
+    }
   };
 
-  const toggleOpen = () => {
-    setIsOpen(!isOpen);
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
   };
 
-  useEffect(() => {
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
+  const handleDeleterOpen = () => {
+    setDeleter(true);
+  };
+
+  const handleDeleterClose = () => {
+    setDeleter(false);
+  };
+
+  const deleteAccount = () => {
+    // axios
+    //   .delete(`${baseUrl}user/delete`, {
+    //     headers: { Authorization: `Bearer ${token}` },
+    //   })
+    //   .then((result) => {
+    //     localStorage.clear();
+    //     navigate("/login");
+    //     toast.success("Account deleted successfully");
+    //   })
+    //   .catch((error) => {
+    //     console.log(error);
+    //   });
+
+    toast.error("This feature is not available yet");
+  };
 
   useEffect(() => {
     fetchData();
     fetchNotifications();
   }, [render]);
 
-  const { image, userName, email } = userData;
+  const { image, userName } = userData;
 
   return (
     <nav
       id="navBar"
-      className="h-[75px] py-4 border-b border-gray-400 flex items-center justify-between bg-slate-50 sticky top-0 transition-all duration-300 z-30 blr"
+      className="h-[75px] py-4 border-b border-gray-400 flex items-center justify-between bg-slate-50 sticky top-0 transition-all duration-300 z-30 blr "
     >
       <div className="h-full flex items-center ml-24 w-[300px] max-[1135px]:w-auto max-sm:mx-6 cntrst">
         <img src="http://localhost:5173/logo.svg" alt="Jobs" className="h-8" />
       </div>
 
-      <ul className="h-full flex items-center gap-12 text-xl font-semibold text-gray-600 max-[1135px]:hidden">
-        <li>
-          <NavLink
-            className="transition-colors duration-200 hover:text-blue-800 hover:border-b-2 hover:border-blue-800 hover:py-1"
-            to={`${userData.userType}/home`}
-          >
-            Home
-          </NavLink>
-        </li>
+      <ul className="h-full flex items-center gap-8 text-xl font-semibold text-gray-600 max-[1135px]:hidden">
+        <NavLinkComp route={`${userData.userType}/home`} linkName="Home" />
+
         {userData.userType === "user" && (
-          <li>
-            <NavLink
-              className="transition-colors duration-200 hover:text-blue-800 hover:border-b-2 hover:border-blue-800 hover:py-1"
-              to={`${userData.userType}/createjob/${id}`}
-            >
-              Create Job
-            </NavLink>
-          </li>
+          <NavLinkComp
+            route={`${userData.userType}/createjob/${id}`}
+            linkName="Create Job"
+          />
         )}
-        <li>
-          <NavLink
-            className="transition-colors duration-200 hover:text-blue-800 hover:border-b-2 hover:border-blue-800 hover:py-1"
-            to={`${userData.userType}/contacts`}
-          >
-            Contacts
-          </NavLink>
-        </li>
+
+        <NavLinkComp
+          route={`${userData.userType}/contacts`}
+          linkName="Contacts"
+        />
       </ul>
 
-      <div className="mx-24 max-w-60 flex items-center justify-between gap-2 text-gray-700 max-[1135px]:hidden">
+      <section className="mx-24 max-w-60 flex items-center justify-between gap-2 text-gray-500">
         <div
-          className="border border-solid border-gray-600 text-2xl cursor-pointer rounded-full p-1 max-[1135px]:hidden"
+          className="border border-solid border-gray-500 text-2xl cursor-pointer rounded-full p-1"
           onClick={() => setDarkMode(!darkMode)}
         >
           {darkMode ? <IoIosSunny /> : <RiMoonClearFill />}
         </div>
-        <div
-          className="border border-solid border-gray-600 text-2xl rounded-full p-1 max-[1135px]:hidden hover:text-blue-800 transition-all duration-200 cursor-pointer relative"
-          onClick={() => {
-            navigate(`/${userData.userType}/notifications/${id}`);
-            markSeen();
-          }}
+
+        <button
+          type="button"
+          className="border border-solid border-gray-500 text-2xl text-gray-500 rounded-full p-1 hover:text-blue-800 transition-all duration-200 cursor-pointer relative"
+          onClick={markSeen}
         >
           <IoNotifications />
           {notificationsArray.length > 0 && (
@@ -149,67 +164,65 @@ const Navbar = () => {
               {notificationsArray.length}
             </span>
           )}
-        </div>
+        </button>
+
         <div
-          id="menuBox"
-          className=" flex items-center px-0.5 py-0.5 border cursor-pointer border-gray-600 border-solid rounded-full gap-2"
-          onClick={toggleOpen}
+          className="flex items-center px-0.5 py-0.5 border cursor-pointer border-gray-500 border-solid rounded-full gap-2"
+          aria-controls={open ? "basic-menu" : undefined}
+          aria-haspopup="true"
+          aria-expanded={open ? "true" : undefined}
+          onClick={handleClick}
         >
-          <div className="h-8 w-8 border border-gray-600 border-solid rounded-full overflow-hidden">
-            <img
-              src={
-                image && image !== "null"
-                  ? `${baseUrl}${image}`
-                  : "https://templates.joomla-monster.com/joomla30/jm-news-portal/components/com_djclassifieds/assets/images/default_profile.png"
-              }
-              alt="userPic"
-              className="w-full h-full object-cover"
-            />
-          </div>
-          <span className="font-semibold max-w-24">{userName}</span>
+          <ProfileImage image={image} sty="w-8 h-8" />
+          <span className="font-semibold text-sm max-w-24">{userName}</span>
           <RiArrowDropDownLine className="text-2xl" />
         </div>
-      </div>
-      {isOpen && (
-        <div
-          ref={ref}
-          className="border border-gray-500 cursor-default flex flex-col justify-center items-center py-6 absolute top-[60px] w-[210px] rounded-lg bg-white gap-2 right-[100px] px-6"
+
+        <Menu
+          id="basic-menu"
+          anchorEl={anchorEl}
+          open={open}
+          onClose={handleClose}
+          MenuListProps={{
+            "aria-labelledby": "basic-button",
+          }}
         >
-          <div className="border border-gray-600 rounded-full overflow-hidden w-14 h-14">
-            <img
-              src={
-                image && image !== "null"
-                  ? `${baseUrl}${image}`
-                  : "https://templates.joomla-monster.com/joomla30/jm-news-portal/components/com_djclassifieds/assets/images/default_profile.png"
-              }
-              alt=""
-              className="w-full h-full object-cover"
+          <ProfileMenu
+            userData={userData}
+            handleClose={handleClose}
+            handleDeleterOpen={handleDeleterOpen}
+          />
+        </Menu>
+
+        <Dialog
+          open={deleter}
+          onClose={handleDeleterClose}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+        >
+          <DialogTitle id="alert-dialog-title">
+            Are you sure you want to delete your account?
+          </DialogTitle>
+          <DialogContent>
+            <DialogContentText id="alert-dialog-description">
+              After this action your account will be permanently deleted. You
+              will not be able to recover it again and your progress on it will
+              be lost.
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button label="Cancel" color="primary" click={handleDeleterClose} />
+            <Button
+              label="Delete"
+              color="danger"
+              click={() => {
+                handleDeleterClose();
+                deleteAccount();
+              }}
             />
-          </div>
-          <Link
-            to={
-              userData.userType === "user"
-                ? `user/profile`
-                : `contractor/profile`
-            }
-            className="transition-all duration-150 text-xl cursor-pointer font-semibold text-teal-950 hover:text-blue-800"
-          >
-            Profile
-          </Link>
-          <div className="border border-gray-500 w-full my-2"></div>
-          <h3 className="text-gray-900 text-center">{`${userName} (${userData.userType})`}</h3>
-          <p className="text-sm pb-2">{email}</p>
-          <button
-            className="border border-red-700 bg-red-700 cursor-pointer text-white px-3 py-0.5 rounded-full font-semibold"
-            onClick={() => {
-              localStorage.clear();
-              navigate("/login");
-            }}
-          >
-            Logout
-          </button>
-        </div>
-      )}
+          </DialogActions>
+        </Dialog>
+      </section>
     </nav>
   );
 };

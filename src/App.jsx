@@ -1,24 +1,26 @@
-import React, { useEffect } from 'react'
-import Navbar from './components/NavBar'
-import { Outlet, useNavigate } from 'react-router-dom'
+import React, { useEffect } from "react";
+import Navbar from "./components/NavBar";
+import { Outlet, useNavigate } from "react-router-dom";
+import { dataHandler } from "./util/loginData";
 
 const App = () => {
-    const navigate = useNavigate();
+  const navigate = useNavigate();
+  const { token, status } = dataHandler();
 
-    useEffect(() => {
-        const token = localStorage.getItem('token');
-        if (!token) {
-            navigate('/login');
-        }
-    })
+  useEffect(() => {
+    if (token && status === "verified") {
+      console.log("verified");
+    } else {
+      navigate("/login");
+    }
+  }, []);
 
+  return (
+    <main className="font-sans">
+      <Navbar />
+      <Outlet />
+    </main>
+  );
+};
 
-    return (
-        <>
-            <Navbar />
-            <Outlet />
-        </>
-    )
-}
-
-export default App
+export default App;

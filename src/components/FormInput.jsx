@@ -25,7 +25,7 @@ const FormInput = ({
   if (type === "select") {
     return (
       <div className="w-full">
-        <label htmlFor={id} className="w-full font-semibold">
+        <label htmlFor={id} className="w-full font-sans font-semibold">
           {formattedLabel}
         </label>
         <Select
@@ -53,7 +53,7 @@ const FormInput = ({
   if (type === "multiSelect") {
     return (
       <div className="w-full">
-        <div className=" w-full font-semibold">{formattedLabel}</div>
+        <div className=" w-full font-sans font-semibold">{formattedLabel}</div>
         <Select
           id={id}
           options={options}
@@ -88,7 +88,7 @@ const FormInput = ({
   if (type === "textarea") {
     return (
       <div className="w-full">
-        <label htmlFor={id} className="w-full font-semibold">
+        <label htmlFor={id} className="w-full font-sans font-semibold">
           {formattedLabel}
         </label>
         <textarea
@@ -108,7 +108,7 @@ const FormInput = ({
   if (type === "date") {
     return (
       <div className="w-full">
-        <label htmlFor={id} className="w-full font-semibold">
+        <label htmlFor={id} className="w-full font-sans font-semibold">
           {formattedLabel}
         </label>
         <input
@@ -129,7 +129,7 @@ const FormInput = ({
   if (type === "time") {
     return (
       <div className="">
-        <label htmlFor={id} className=" w-full font-semibold">
+        <label htmlFor={id} className=" w-full font-sans font-semibold">
           {formattedLabel}
         </label>
         <input
@@ -146,7 +146,7 @@ const FormInput = ({
 
   return (
     <div className="w-full">
-      <label htmlFor={id} className="w-full font-semibold">
+      <label htmlFor={id} className="w-full font-sans font-semibold">
         {formattedLabel}
       </label>
       <input
