@@ -34,11 +34,11 @@ const Career = () => {
     setGraphType(type);
   };
 
-  const defaultClass = "text-left";
+  const defaultClass = "text-left hover:text-blue-800 transition-all duration-200 text-gray-700 font-semibold";
 
   return (
     <section className="flex">
-      <aside className="border-r border-gray-400 w-[25%] flex flex-col pl-16 py-10 gap-2 tracking-wider">
+      <aside className="border-r border-gray-400 w-[25%] flex flex-col pl-16 py-10 gap-2">
         <h1 className="text-lg font-semibold text-gray-500 mb-10">
           Graph Types
         </h1>
