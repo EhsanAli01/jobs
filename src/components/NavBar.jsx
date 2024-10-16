@@ -126,7 +126,7 @@ const Navbar = () => {
       className="h-[75px] py-4 border-b border-gray-400 flex items-center justify-between bg-slate-50 sticky top-0 transition-all duration-300 z-30 blr "
     >
       <div className="h-full flex items-center ml-24 w-[300px] max-[1135px]:w-auto max-sm:mx-6 cntrst">
-        <img src="http://localhost:5173/logo.svg" alt="Jobs" className="h-8" />
+        <img src="http://localhost:5170/logo.svg" alt="Jobs" className="h-8" />
       </div>
 
       <ul className="h-full flex items-center gap-8 text-xl font-semibold text-gray-600 max-[1135px]:hidden">
